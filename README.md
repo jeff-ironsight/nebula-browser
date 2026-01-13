@@ -1,6 +1,6 @@
 # Nebula Browser
 
-A **Discord-inspired test client** for the **Nebula Gateway** built with **Vite** and **Vue 3**.
+A **Discord-inspired test client** for [**nebula-gateway**](https://github.com/jeff-ironsight/nebula-gateway) built with **Vite** and **Vue 3**.
 
 Nebula Browser focuses on exercising the gateway protocol:
 
