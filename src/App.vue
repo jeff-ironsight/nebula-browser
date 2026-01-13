@@ -1,33 +1,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-
-type GatewayPayload =
-  | { op: 'Hello'; d: { heartbeat_interval_ms: number } }
-  | { op: 'Identify'; d: { token: string } }
-  | { op: 'Subscribe'; d: { channel_id: string } }
-  | { op: 'MessageCreate'; d: { channel_id: string; content: string } }
-  | { op: 'Dispatch'; d: { t: string; d: Record<string, unknown> } }
-
-type Message = {
-  id: string
-  author: string
-  content: string
-  time: string
-  channelId: string
-}
-
-type Channel = {
-  id: string
-  name: string
-  type: 'text' | 'voice'
-}
+import type {Message} from "./types/Message.ts";
+import type {Channel} from "./types/Channel.ts";
+import type {GatewayPayload} from "./types/GatewayPayload.ts";
+import type {ClientStatus} from "./types/ClientStatus.ts";
 
 const httpBase = import.meta.env.VITE_GATEWAY_HTTP_URL || ''
 const wsBase = import.meta.env.VITE_GATEWAY_WS_URL || ''
 
-const status = ref<'disconnected' | 'connecting' | 'connected' | 'ready' | 'error'>(
-  'disconnected',
-)
+const status = ref<ClientStatus>('disconnected',)
 const statusNote = ref('Idle')
 const gatewayLog = ref<string[]>([])
 const userToken = ref<string | null>(null)
@@ -44,8 +25,6 @@ const channels = ref<Channel[]>([
 const filteredMessages = computed(() =>
   messages.value.filter((message) => message.channelId === activeChannelId.value),
 )
-
-let socket: WebSocket | null = null
 
 const statusLabel = computed(() => {
   if (status.value === 'ready') return 'Ready'
@@ -64,6 +43,8 @@ const wsUrl = computed(() => {
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
   return `${protocol}://${window.location.host}/ws`
 })
+
+let socket: WebSocket | null = null
 
 const sendPayload = (payload: GatewayPayload) => {
   if (!socket || socket.readyState !== WebSocket.OPEN) return
