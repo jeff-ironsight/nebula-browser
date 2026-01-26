@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AuthLayout from '../layouts/AuthLayout.vue'
 import LoginButton from '../components/LoginButton.vue'
+import nebulaLogoNamed from '../assets/nebula-named-900x512.png'
 
 const handleImageError = (e: Event) => {
   const target = e.target as HTMLImageElement
@@ -12,14 +13,13 @@ const handleImageError = (e: Event) => {
   <AuthLayout>
     <div class="main-card-wrapper">
       <img
-        src="https://cdn.auth0.com/quantum-assets/dist/latest/logos/auth0/auth0-lockup-en-ondark.png"
-        alt="Auth0 Logo"
-        class="auth0-logo"
+        :src="nebulaLogoNamed"
+        alt="Nebula Logo"
+        class="nebula-logo"
         @error="handleImageError"
       />
-      <h1 class="main-title">Nebula</h1>
       <div class="action-card">
-        <p class="action-text">Get started by signing in to your account</p>
+        <p class="action-text">Get started by signing in to your Nebula account</p>
         <LoginButton />
       </div>
     </div>
@@ -41,22 +41,11 @@ const handleImageError = (e: Event) => {
   animation: fadeInScale 0.8s ease-out forwards;
 }
 
-.auth0-logo {
-  width: 160px;
-  margin-bottom: 1.5rem;
+.nebula-logo {
+  width: 400px;
+  height: auto;
   opacity: 0;
   animation: slideInDown 1s ease-out forwards 0.2s;
-}
-
-.main-title {
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: #f7fafc;
-  text-align: center;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  animation: fadeIn 1s ease-out forwards 0.4s;
 }
 
 .action-card {
@@ -102,12 +91,9 @@ const handleImageError = (e: Event) => {
     margin: 1rem;
   }
 
-  .main-title {
-    font-size: 2.2rem;
-  }
-
-  .auth0-logo {
-    width: 120px;
+  .nebula-logo {
+    width: 200px;
+    max-width: 80%;
   }
 }
 </style>
