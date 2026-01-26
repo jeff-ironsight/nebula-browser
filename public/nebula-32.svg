@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256" role="img" aria-label="Nebula icon">
+    <defs>
+        <linearGradient id="nebulaGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8B5CF6"/>
+            <stop offset="0.55" stop-color="#5B6CFF"/>
+            <stop offset="1" stop-color="#22D3EE"/>
+        </linearGradient>
+
+        <radialGradient id="spaceGrad" cx="35%" cy="30%" r="80%">
+            <stop offset="0" stop-color="#0B1020"/>
+            <stop offset="0.55" stop-color="#0A1630"/>
+            <stop offset="1" stop-color="#081026"/>
+        </radialGradient>
+
+        <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+            <feColorMatrix in="b" type="matrix" values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 0.55 0" result="g"/>
+            <feMerge>
+                <feMergeNode in="g"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+
+        <symbol id="star" viewBox="-10 -10 20 20">
+            <path d="M0-9 L2.1-2.6 L9 0 L2.1 2.6 L0 9 L-2.1 2.6 L-9 0 L-2.1-2.6 Z" fill="#EAF2FF"/>
+        </symbol>
+    </defs>
+
+    <g filter="url(#softGlow)">
+        <!-- Outer bubble -->
+        <path d="M140 24
+             C91 24 52 60 52 104
+             C52 126 62 146 80 161
+             C78 180 69 198 56 212
+             C82 205 103 192 118 176
+             C125 177 132 178 140 178
+             C189 178 228 142 228 104
+             C228 60 189 24 140 24Z"
+              fill="url(#nebulaGrad)"/>
+
+        <!-- Inner space -->
+        <path d="M140 44
+             C104 44 76 69 76 104
+             C76 129 93 150 120 158
+             C105 174 85 187 64 195
+             C90 193 116 180 132 162
+             C135 163 137 163 140 163
+             C176 163 204 138 204 104
+             C204 69 176 44 140 44Z"
+              fill="url(#spaceGrad)" opacity="0.98"/>
+
+        <!-- Swoosh highlight -->
+        <path d="M102 124
+             C130 146 170 144 196 118
+             C184 154 156 176 122 176
+             C108 176 95 172 85 166
+             C94 156 104 142 102 124Z"
+              fill="url(#nebulaGrad)" opacity="0.9"/>
+
+        <!-- Stars -->
+        <g opacity="0.95">
+            <use href="#star" x="142" y="86" width="28" height="28"/>
+            <use href="#star" x="170" y="64" width="22" height="22" opacity="0.9"/>
+            <use href="#star" x="116" y="66" width="18" height="18" opacity="0.85"/>
+            <circle cx="168" cy="110" r="3" fill="#BDEBFF" opacity="0.75"/>
+            <circle cx="132" cy="104" r="2.3" fill="#C7B8FF" opacity="0.75"/>
+            <circle cx="192" cy="104" r="2.1" fill="#FFFFFF" opacity="0.55"/>
+        </g>
+    </g>
+</svg>
