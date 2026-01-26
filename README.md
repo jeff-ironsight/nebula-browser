@@ -4,7 +4,7 @@ A **Discord-inspired test client** for [**nebula-gateway**](https://github.com/j
 
 Nebula Browser focuses on exercising the gateway protocol:
 
-- REST login to acquire a token
+- Auth0 login
 - WebSocket identify and channel subscribe
 - Message create and dispatch handling
 - Minimal UI to validate gateway behavior

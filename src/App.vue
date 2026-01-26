@@ -1,45 +1,23 @@
 <script setup lang="ts">
-import { useGateway } from './composables/useGateway'
-import ChannelList from './components/ChannelList.vue'
-import ChatHeader from './components/ChatHeader.vue'
-import MessageList from './components/MessageList.vue'
-import MessageComposer from './components/MessageComposer.vue'
+import { useAuth0 } from '@auth0/auth0-vue'
+import Chat from './pages/Chat.vue'
+import Login from './pages/Login.vue'
+import Loading from "./pages/Loading.vue"
+import Error from "./pages/Error.vue"
 
-const {
-  status,
-  statusNote,
-  statusLabel,
-  gatewayLog,
-  activeChannelId,
-  composer,
-  channels,
-  filteredMessages,
-  connectGateway,
-  disconnectGateway,
-  sendMessage,
-  switchChannel,
-} = useGateway()
+const { isAuthenticated, isLoading, error } = useAuth0()
 </script>
 
 <template>
-  <div class="shell">
-    <ChannelList
-      :channels="channels"
-      :active-channel-id="activeChannelId"
-      @switch="switchChannel"
-    />
-    <main class="chat">
-      <ChatHeader
-        :active-channel-id="activeChannelId"
-        :status="status"
-        :status-label="statusLabel"
-        :status-note="statusNote"
-        :gateway-log="gatewayLog"
-        @connect="connectGateway"
-        @disconnect="disconnectGateway"
-      />
-      <MessageList :messages="filteredMessages" />
-      <MessageComposer v-model="composer" @submit="sendMessage" />
-    </main>
-  </div>
+  <Loading v-if="isLoading" />
+  <Error v-else-if="error" :message="error.message" />
+  <Chat v-else-if="isAuthenticated" />
+  <Login v-else />
 </template>
+
+<style scoped>
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>

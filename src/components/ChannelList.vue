@@ -1,9 +1,17 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Channel } from '../types/Channel'
+import UserMenuButton from './UserMenuButton.vue'
+import UserMenuPanel from './UserMenuPanel.vue'
 
 defineProps<{ channels: Channel[]; activeChannelId: string }>()
 
 defineEmits<{ switch: [channelId: string] }>()
+
+const menuOpen = ref(false)
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value
+}
 </script>
 
 <template>
@@ -15,19 +23,26 @@ defineEmits<{ switch: [channelId: string] }>()
       </div>
     </header>
 
-    <div class="channel-group">
-      <div class="channel-group-title">Text Channels</div>
-      <button
-        v-for="channel in channels.filter((item) => item.type === 'text')"
-        :key="channel.id"
-        class="channel-row"
-        :class="{ active: channel.id === activeChannelId }"
-        type="button"
-        @click="$emit('switch', channel.id)"
-      >
-        <span class="channel-hash">#</span>
-        <span>{{ channel.name }}</span>
-      </button>
+    <div class="channels-body">
+      <div class="channel-group">
+        <div class="channel-group-title">Text Channels</div>
+        <button
+          v-for="channel in channels.filter((item) => item.type === 'text')"
+          :key="channel.id"
+          class="channel-row"
+          :class="{ active: channel.id === activeChannelId }"
+          type="button"
+          @click="$emit('switch', channel.id)"
+        >
+          <span class="channel-hash">#</span>
+          <span>{{ channel.name }}</span>
+        </button>
+      </div>
     </div>
+
+    <footer class="channels-footer">
+      <UserMenuPanel v-if="menuOpen" />
+      <UserMenuButton :open="menuOpen" @toggle="toggleMenu" />
+    </footer>
   </aside>
 </template>

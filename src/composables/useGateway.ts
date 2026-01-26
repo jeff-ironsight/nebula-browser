@@ -1,12 +1,14 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useAuth0 } from '@auth0/auth0-vue'
 import type { Message } from '../types/Message'
 import type { Channel } from '../types/Channel'
 import type { GatewayPayload } from '../types/GatewayPayload'
 import type { ClientStatus } from '../types/ClientStatus'
 
 export const useGateway = () => {
-  const httpBase = import.meta.env.VITE_GATEWAY_HTTP_URL || ''
   const wsBase = import.meta.env.VITE_GATEWAY_WS_URL || ''
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE || ''
+  const { getAccessTokenSilently, isAuthenticated, user } = useAuth0()
 
   const status = ref<ClientStatus>('disconnected')
   const statusNote = ref('Idle')
@@ -33,10 +35,6 @@ export const useGateway = () => {
     if (status.value === 'error') return 'Error'
     return 'Disconnected'
   })
-
-  const loginUrl = computed(() =>
-    httpBase ? `${httpBase}/api/login` : '/api/login',
-  )
 
   const wsUrl = computed(() => {
     if (wsBase) return wsBase
@@ -106,23 +104,23 @@ export const useGateway = () => {
   }
 
   const connectGateway = async () => {
+    if (!isAuthenticated.value) {
+      status.value = 'error'
+      statusNote.value = 'Please sign in before connecting'
+      return
+    }
+
     status.value = 'connecting'
-    statusNote.value = 'Logging in...'
+    statusNote.value = 'Fetching access token...'
     try {
-      const response = await fetch(loginUrl.value, { method: 'POST' })
-      if (!response.ok) {
-        const error = new Error(`Login failed (${response.status})`)
-        status.value = 'error'
-        statusNote.value = String(error)
-        return
-      }
-      const data = (await response.json()) as { token: string; user_id: string }
-      userToken.value = data.token
-      userId.value = data.user_id
-      gatewayLog.value.unshift('< LOGIN ok')
+      userToken.value = await getAccessTokenSilently({
+        authorizationParams: audience ? { audience } : undefined,
+      })
+      userId.value = user.value?.sub ?? null
+      gatewayLog.value.unshift('< AUTH0 token ok')
     } catch (error) {
       status.value = 'error'
-      statusNote.value = String(error)
+      statusNote.value = `Token fetch failed: ${String(error)}`
       return
     }
 

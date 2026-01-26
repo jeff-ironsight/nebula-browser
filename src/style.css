@@ -49,6 +49,50 @@ button {
   cursor: pointer;
 }
 
+.button {
+  padding: 0.7rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  outline: none;
+}
+
+.button:focus {
+  box-shadow: 0 0 0 4px rgba(99, 179, 237, 0.45);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button.login {
+  background-color: #63b3ed;
+  color: #1a1e27;
+}
+
+.button.login:hover:not(:disabled) {
+  background-color: #4299e1;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+}
+
+.button.logout {
+  background-color: #fc8181;
+  color: #1a1e27;
+}
+
+.button.logout:hover:not(:disabled) {
+  background-color: #e53e3e;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+}
+
 input {
   font-family: inherit;
   color: inherit;
@@ -83,6 +127,13 @@ input {
   padding: 22px 18px;
   background: var(--panel);
   border-right: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.channels-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .channels-header {
@@ -126,6 +177,109 @@ input {
 .channel-row.active {
   background: rgba(94, 162, 255, 0.15);
   color: var(--ink-strong);
+}
+
+.channels-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  align-items: stretch;
+}
+
+.user-menu-button {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: left;
+  transition: background 0.2s ease, transform 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.user-menu-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.user-menu-button[data-open='true'] {
+  background: rgba(94, 162, 255, 0.16);
+}
+
+.user-menu-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(94, 162, 255, 0.6);
+}
+
+.user-menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-menu-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu-email {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-menu-caret {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}
+
+.user-menu-panel {
+  background: var(--panel-strong);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: 100%;
+  align-self: stretch;
+}
+
+.user-menu-profile {
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.user-menu-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.user-menu-actions .button {
+  width: 100%;
+  justify-content: center;
 }
 
 .channel-hash {
