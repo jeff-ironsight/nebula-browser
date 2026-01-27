@@ -3,6 +3,7 @@
   <img width="450" height="128" alt="Nebula Logo" src="https://github.com/user-attachments/assets/fd7410c7-322c-4ec2-a17b-563b58081cfe" />
 </p>
 
+<br>
 <p align="center">
   <a href="https://libraries.io/github/jeff-ironsight/nebula-browser">
     <img src="https://img.shields.io/librariesio/github/jeff-ironsight/nebula-browser" alt="Dependencies" />
@@ -17,11 +18,18 @@
   <a href="https://github.com/jeff-ironsight/nebula-browser/actions/workflows/ci.yml">
     <img src="https://github.com/jeff-ironsight/nebula-browser/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" />
   </a>
+  <br><br>
+  <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=flat&logo=vuedotjs&logoColor=%234FC08D" alt="VueJS" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=flat&logo=vite&logoColor=white" alt="Vite" />
 </p>
 
 ---
 
-A **Discord-inspired test client** for [**nebula-gateway**](https://github.com/jeff-ironsight/nebula-gateway) built with **Vite** and **Vue 3**.
+A **Discord-inspired test client** for [**nebula-gateway**](https://github.com/jeff-ironsight/nebula-gateway) built with
+**Vite** and **Vue 3**.
 
 Nebula Browser focuses on exercising the gateway protocol:
 
