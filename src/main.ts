@@ -1,7 +1,8 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import './style.css'
 import {createAuth0} from "@auth0/auth0-vue";
 import App from "./App.vue";
+import {createPinia} from "pinia";
 
 const app = createApp(App)
 
@@ -13,5 +14,7 @@ app.use(createAuth0({
         audience: import.meta.env.VITE_AUTH0_AUDIENCE,
     },
 }))
+
+app.use(createPinia())
 
 app.mount('#app')
