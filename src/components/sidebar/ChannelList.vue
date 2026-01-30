@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import type { Channel } from '../../types/Channel'
+import type { Channel } from '@/types/Channel.ts'
+import { Icon } from '@iconify/vue'
+import { useAuth0 } from '@auth0/auth0-vue'
 import {
   Sidebar,
   SidebarContent,
@@ -14,16 +15,21 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '../ui/sidebar'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from '../ui/dropdown-menu'
 import UserMenuButton from './UserMenuButton.vue'
-import UserMenuPanel from './UserMenuPanel.vue'
 
 defineProps<{ channels: Channel[]; activeChannelId: string }>()
 
 defineEmits<{ switch: [channelId: string] }>()
 
-const menuOpen = ref(false)
-const toggleMenu = () => {
-  menuOpen.value = !menuOpen.value
+const { logout, isLoading } = useAuth0()
+
+const handleLogout = () => {
+  logout({
+    logoutParams: {
+      returnTo: window.location.origin,
+    },
+  })
 }
 </script>
 
@@ -64,8 +70,17 @@ const toggleMenu = () => {
       </SidebarContent>
 
       <SidebarFooter class="border-t border-sidebar-border/40 pt-3">
-        <UserMenuPanel v-if="menuOpen"/>
-        <UserMenuButton :open="menuOpen" @toggle="toggleMenu"/>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <UserMenuButton/>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" class="w-48" side="top">
+            <DropdownMenuItem :disabled="isLoading" @click="handleLogout">
+              <Icon class="h-4 w-4 mr-2" icon="mdi:logout"/>
+              {{ isLoading ? 'Loading...':'Log out' }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarFooter>
     </Sidebar>
   </SidebarProvider>
