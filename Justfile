@@ -44,6 +44,13 @@ fmt:
     just editorconfig
 
 [group('LINT')]
+check:
+    vue-tsc -b
+    npx eslint . --fix
+    just editorconfig
+    just test
+
+[group('LINT')]
 lint:
     vue-tsc -b
     npx eslint .
