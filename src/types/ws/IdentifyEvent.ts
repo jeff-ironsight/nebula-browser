@@ -1,3 +1,4 @@
 export interface IdentifyEvent {
-    token: string
+  token: string
 }
+

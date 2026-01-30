@@ -1,3 +1,3 @@
 export interface SubscribeEvent {
-    channel_id: string
+  channel_id: string
 }

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useAuth0 } from '@auth0/auth0-vue'
 
 const { logout, isLoading } = useAuth0()
@@ -14,10 +14,10 @@ const handleLogout = () => {
 
 <template>
   <button
-      @click="handleLogout"
-      class="button logout"
       :disabled="isLoading"
+      class="button logout"
+      @click="handleLogout"
   >
-    {{ isLoading ? 'Loading...' : 'Log Out' }}
+    {{ isLoading ? 'Loading...':'Log Out' }}
   </button>
 </template>

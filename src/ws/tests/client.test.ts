@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createSocketClient } from '../client'
+
 import type { WsGatewayPayload } from '../../types/ws/WsGatewayPayload'
+import { createSocketClient } from '../client'
 
 type Listener = (event?: { data?: string }) => void
 
@@ -20,7 +21,7 @@ class MockWebSocket {
   }
 
   addEventListener(type: string, listener: Listener) {
-    this.listeners[type] = this.listeners[type] ?? []
+    this.listeners[type] ??= []
     this.listeners[type].push(listener)
   }
 
@@ -83,7 +84,9 @@ describe('createSocketClient', () => {
     client.connect()
     const socket = MockWebSocket.instances[0]
     expect(socket).toBeDefined()
-    if (!socket) throw new Error('MockWebSocket instance not created')
+    if (!socket) {
+      throw new Error('MockWebSocket instance not created')
+    }
 
     socket.open()
     expect(onOpen).toHaveBeenCalledTimes(1)

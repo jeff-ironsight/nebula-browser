@@ -1,7 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import AuthLayout from '../layouts/AuthLayout.vue'
 import LoginButton from '../components/auth/LoginButton.vue'
-import nebulaLogoNamed from '../assets/nebula-named-900x512.png'
+import nebulaLogoNamed from '../assets/nebula-named-900x256.png'
 
 const handleImageError = (e: Event) => {
   const target = e.target as HTMLImageElement
@@ -13,14 +13,14 @@ const handleImageError = (e: Event) => {
   <AuthLayout>
     <div class="main-card-wrapper">
       <img
-        :src="nebulaLogoNamed"
-        alt="Nebula Logo"
-        class="nebula-logo"
-        @error="handleImageError"
+          :src="nebulaLogoNamed"
+          alt="Nebula Logo"
+          class="nebula-logo"
+          @error="handleImageError"
       />
       <div class="action-card">
         <p class="action-text">Get started by signing in to your Nebula account</p>
-        <LoginButton />
+        <LoginButton/>
       </div>
     </div>
   </AuthLayout>
@@ -71,18 +71,34 @@ const handleImageError = (e: Event) => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes slideInDown {
-  from { opacity: 0; transform: translateY(-70px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-70px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 600px) {

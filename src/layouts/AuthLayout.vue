@@ -1,6 +1,6 @@
 <template>
   <div class="auth-screen">
-    <slot />
+    <slot/>
   </div>
 </template>
 

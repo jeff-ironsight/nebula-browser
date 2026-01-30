@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {useGateway} from '../composables/useGateway.ts'
+import { useGateway } from '../composables/useGateway.ts'
 import ChannelList from '../components/sidebar/ChannelList.vue'
 import ChatHeader from '../components/chat/ChatHeader.vue'
 import MessageList from '../components/chat/MessageList.vue'

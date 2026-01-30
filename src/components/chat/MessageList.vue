@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { Message } from '../../types/Message'
 
 defineProps<{ messages: Message[] }>()
@@ -7,10 +7,10 @@ defineProps<{ messages: Message[] }>()
 <template>
   <section class="messages">
     <article
-      v-for="(message, index) in messages"
-      :key="message.id"
-      class="message"
-      :style="{ '--stagger': `${index * 40}ms` }"
+        v-for="(message, index) in messages"
+        :key="message.id"
+        :style="{ '--stagger': `${index * 40}ms` }"
+        class="message"
     >
       <div class="message-avatar">
         {{ message.author.slice(0, 1) }}

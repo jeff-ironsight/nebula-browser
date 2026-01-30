@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 defineProps<{ modelValue: string }>()
 
 defineEmits<{ 'update:modelValue': [value: string]; submit: [] }>()
@@ -8,10 +8,10 @@ defineEmits<{ 'update:modelValue': [value: string]; submit: [] }>()
   <form class="composer" @submit.prevent="$emit('submit')">
     <span class="composer-icon">+</span>
     <input
-      :value="modelValue"
-      type="text"
-      placeholder="Message #general"
-      @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        :value="modelValue"
+        placeholder="Message #general"
+        type="text"
+        @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
     <button class="composer-action" type="submit">Send</button>
   </form>

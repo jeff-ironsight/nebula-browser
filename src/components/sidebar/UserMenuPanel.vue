@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import LogoutButton from '../auth/LogoutButton.vue'
 </script>
 
 <template>
   <div class="user-menu-panel">
     <div class="user-menu-actions">
-      <LogoutButton />
+      <LogoutButton/>
     </div>
   </div>
 </template>

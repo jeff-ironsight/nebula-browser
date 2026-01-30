@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { ClientStatus } from '../../types/ClientStatus'
 
 defineProps<{
@@ -21,24 +21,24 @@ defineEmits<{ connect: []; disconnect: [] }>()
       </div>
     </div>
     <div class="chat-status">
-      <div class="status-pill" :data-status="status">
+      <div :data-status="status" class="status-pill">
         {{ statusLabel }}
       </div>
       <div class="status-note">{{ statusNote }}</div>
       <div class="status-actions">
         <button
-          v-if="status === 'disconnected' || status === 'error'"
-          class="status-button"
-          type="button"
-          @click="$emit('connect')"
+            v-if="status === 'disconnected' || status === 'error'"
+            class="status-button"
+            type="button"
+            @click="$emit('connect')"
         >
           Connect
         </button>
         <button
-          v-else
-          class="status-button secondary"
-          type="button"
-          @click="$emit('disconnect')"
+            v-else
+            class="status-button secondary"
+            type="button"
+            @click="$emit('disconnect')"
         >
           Disconnect
         </button>

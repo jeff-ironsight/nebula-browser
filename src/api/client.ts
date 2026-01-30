@@ -1,5 +1,7 @@
-import axios, { AxiosHeaders, type AxiosInstance, type AxiosRequestConfig } from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
+import type { AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, { AxiosHeaders } from 'axios'
+
 import { auth0Audience } from '../config/env'
 
 export const BASE_API_ENDPOINT = '/api'
@@ -7,22 +9,27 @@ export const BASE_API_ENDPOINT = '/api'
 type TokenProvider = () => Promise<string | null>
 
 const addNebulaInterceptor = (instance: AxiosInstance, getToken?: TokenProvider) => {
-  if (!getToken) return instance
+  if (!getToken) {
+    return instance
+  }
 
   instance.interceptors.request.use(
     async (config) => {
-      if (!config.url?.startsWith(BASE_API_ENDPOINT)) return config
+      if (!config.url?.startsWith(BASE_API_ENDPOINT)) {
+        return config
+      }
 
       const token = await getToken()
       if (token) {
-        const headers = AxiosHeaders.from(config.headers ?? {})
+        const headers = AxiosHeaders.from(config.headers)
         headers.set('Authorization', `Bearer ${token}`)
         config.headers = headers
       }
 
       return config
     },
-    (error) => Promise.reject(error),
+    (error) =>
+      Promise.reject(error instanceof Error ? error:new Error(String(error))),
   )
 
   return instance
@@ -36,10 +43,12 @@ export const useApiClient = () => {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
 
   const getToken = async () => {
-    if (!isAuthenticated.value) return null
+    if (!isAuthenticated.value) {
+      return null
+    }
     try {
       return await getAccessTokenSilently({
-        authorizationParams: auth0Audience ? { audience: auth0Audience } : undefined,
+        authorizationParams: auth0Audience ? { audience: auth0Audience }:undefined,
       })
     } catch {
       return null

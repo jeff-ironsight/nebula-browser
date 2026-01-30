@@ -1,5 +1,6 @@
 import { render } from '@testing-library/vue'
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
+
 import Loading from '../Loading.vue'
 
 describe('Loading', () => {

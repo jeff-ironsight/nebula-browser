@@ -1,4 +1,4 @@
-export type SocketClientOptions<T> = {
+export interface SocketClientOptions<T> {
   url: () => string
   onMessage: (payload: T) => void
   onOpen?: () => void
@@ -27,10 +27,12 @@ export const createSocketClient = <T>(options: SocketClientOptions<T>) => {
     }
   }
 
-  const isOpen = () => socket?.readyState === WebSocket.OPEN
+  const isOpen = () => socket?.readyState===WebSocket.OPEN
 
   const send = (payload: T) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN) return false
+    if (socket?.readyState!==WebSocket.OPEN) {
+      return false
+    }
     socket.send(JSON.stringify(payload))
     return true
   }

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { useAuth0 } from '@auth0/auth0-vue'
 
 defineProps<{ open: boolean }>()
@@ -15,16 +15,16 @@ const handleImageError = (event: Event) => {
 </script>
 
 <template>
-  <button class="user-menu-button" type="button" :data-open="open" @click="$emit('toggle')">
+  <button :data-open="open" class="user-menu-button" type="button" @click="$emit('toggle')">
     <img
-      :src="user?.picture || placeholderImage"
-      :alt="user?.name || 'User'"
-      class="user-menu-avatar"
-      @error="handleImageError"
+        :alt="user?.name || 'User'"
+        :src="user?.picture || placeholderImage"
+        class="user-menu-avatar"
+        @error="handleImageError"
     />
     <span class="user-menu-text">
       <span class="user-menu-name">{{ user?.name || 'User' }}</span>
-      <span class="user-menu-email">{{ user?.email || (isLoading ? 'Loading...' : 'No email') }}</span>
+      <span class="user-menu-email">{{ user?.email || (isLoading ? 'Loading...':'No email') }}</span>
     </span>
     <span class="user-menu-caret">▾</span>
   </button>

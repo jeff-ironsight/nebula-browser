@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import AuthLayout from '../layouts/AuthLayout.vue'
 </script>
 
@@ -27,7 +27,11 @@ import AuthLayout from '../layouts/AuthLayout.vue'
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 </style>

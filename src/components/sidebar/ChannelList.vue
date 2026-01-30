@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import {ref} from 'vue'
-import type {Channel} from '../../types/Channel'
+import { ref } from 'vue'
+import type { Channel } from '../../types/Channel'
 import UserMenuButton from './UserMenuButton.vue'
 import UserMenuPanel from './UserMenuPanel.vue'
 
