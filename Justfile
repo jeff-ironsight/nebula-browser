@@ -34,6 +34,10 @@ test:
     npm run test
 
 [group('LINT')]
+typecheck:
+    vue-tsc -b
+
+[group('LINT')]
 fmt:
     vue-tsc -b
     npx eslint . --fix
