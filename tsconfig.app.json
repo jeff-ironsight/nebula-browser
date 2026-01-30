@@ -12,7 +12,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.d.ts"],
   "exclude": ["src/**/tests/**", "src/**/*.test.ts", "src/**/*.test.tsx",
     "src/config/test-setup.ts"
   ]
