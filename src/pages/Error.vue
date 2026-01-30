@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import AuthLayout from '../layouts/AuthLayout.vue'
+import { Card, CardContent } from '../components/ui/card'
 
 defineProps<{
   message?: string
@@ -8,37 +9,12 @@ defineProps<{
 
 <template>
   <AuthLayout>
-    <div class="error-state">
-      <div class="error-title">Oops!</div>
-      <div class="error-message">Something went wrong</div>
-      <div v-if="message" class="error-sub-message">{{ message }}</div>
-    </div>
+    <Card class="p-10 items-center text-center bg-destructive text-destructive-foreground">
+      <CardContent class="flex flex-col items-center gap-2">
+        <div class="text-4xl font-bold">Oops!</div>
+        <div class="text-lg">Something went wrong</div>
+        <div v-if="message" class="text-sm opacity-80">{{ message }}</div>
+      </CardContent>
+    </Card>
   </AuthLayout>
 </template>
-
-<style scoped>
-.error-state {
-  background-color: #c53030;
-  color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  padding: 3rem;
-  text-align: center;
-}
-
-.error-title {
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.error-message {
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-}
-
-.error-sub-message {
-  font-size: 1rem;
-  opacity: 0.8;
-}
-</style>

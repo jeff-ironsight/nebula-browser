@@ -38,59 +38,6 @@ body {
     min-height: 100vh;
 }
 
-button {
-    font-family: inherit;
-    color: inherit;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-.button {
-    padding: 0.7rem 1.5rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 10px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    outline: none;
-}
-
-.button:focus {
-    box-shadow: 0 0 0 4px rgba(99, 179, 237, 0.45);
-}
-
-.button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.button.login {
-    background-color: #63b3ed;
-    color: #1a1e27;
-}
-
-.button.login:hover:not(:disabled) {
-    background-color: #4299e1;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
-}
-
-.button.logout {
-    background-color: #fc8181;
-    color: #1a1e27;
-}
-
-.button.logout:hover:not(:disabled) {
-    background-color: #e53e3e;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
-}
-
 input {
     font-family: inherit;
     color: inherit;

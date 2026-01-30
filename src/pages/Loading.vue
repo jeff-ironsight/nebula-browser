@@ -1,24 +1,18 @@
 <script lang="ts" setup>
 import AuthLayout from '../layouts/AuthLayout.vue'
+import { Card, CardContent } from '../components/ui/card'
 </script>
 
 <template>
   <AuthLayout>
-    <div class="loading-state">
-      <div class="loading-text">Loading...</div>
-    </div>
+    <Card class="p-10 items-center text-center">
+      <CardContent>
+        <div class="loading-text">Loading...</div>
+      </CardContent>
+    </Card>
   </AuthLayout>
 </template>
-
 <style scoped>
-.loading-state {
-  background-color: #2d313c;
-  border-radius: 15px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  padding: 3rem;
-  text-align: center;
-}
-
 .loading-text {
   font-size: 1.8rem;
   font-weight: 500;

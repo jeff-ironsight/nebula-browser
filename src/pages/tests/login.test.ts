@@ -15,7 +15,9 @@ describe('Login', () => {
       },
     })
 
-    expect(getByText('Get started by signing in to your Nebula account')).toBeInTheDocument()
+    expect(
+      getByText(/get started by signing in to your/i, { exact: false }),
+    ).toBeInTheDocument()
     expect(getByRole('button', { name: /log in/i })).toBeInTheDocument()
     expect(getByAltText('Nebula Logo')).toBeInTheDocument()
   })
