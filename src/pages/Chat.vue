@@ -1,9 +1,9 @@
-<script setup lang="ts">
-import { useGateway } from '../composables/useGateway.ts'
-import ChannelList from '../components/ChannelList.vue'
-import ChatHeader from '../components/ChatHeader.vue'
-import MessageList from '../components/MessageList.vue'
-import MessageComposer from '../components/MessageComposer.vue'
+<script lang="ts" setup>
+import {useGateway} from '../composables/useGateway.ts'
+import ChannelList from '../components/sidebar/ChannelList.vue'
+import ChatHeader from '../components/chat/ChatHeader.vue'
+import MessageList from '../components/chat/MessageList.vue'
+import MessageComposer from '../components/chat/MessageComposer.vue'
 
 const {
   status,
@@ -24,22 +24,22 @@ const {
 <template>
   <div class="shell">
     <ChannelList
-      :channels="channels"
-      :active-channel-id="activeChannelId"
-      @switch="switchChannel"
+        :active-channel-id="activeChannelId"
+        :channels="channels"
+        @switch="switchChannel"
     />
     <main class="chat">
       <ChatHeader
-        :active-channel-id="activeChannelId"
-        :status="status"
-        :status-label="statusLabel"
-        :status-note="statusNote"
-        :gateway-log="gatewayLog"
-        @connect="connectGateway"
-        @disconnect="disconnectGateway"
+          :active-channel-id="activeChannelId"
+          :gateway-log="gatewayLog"
+          :status="status"
+          :status-label="statusLabel"
+          :status-note="statusNote"
+          @connect="connectGateway"
+          @disconnect="disconnectGateway"
       />
-      <MessageList :messages="filteredMessages" />
-      <MessageComposer v-model="composer" @submit="sendMessage" />
+      <MessageList :messages="filteredMessages"/>
+      <MessageComposer v-model="composer" @submit="sendMessage"/>
     </main>
   </div>
 </template>

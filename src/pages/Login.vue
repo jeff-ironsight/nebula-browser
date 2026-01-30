@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthLayout from '../layouts/AuthLayout.vue'
-import LoginButton from '../components/LoginButton.vue'
+import LoginButton from '../components/auth/LoginButton.vue'
 import nebulaLogoNamed from '../assets/nebula-named-900x512.png'
 
 const handleImageError = (e: Event) => {

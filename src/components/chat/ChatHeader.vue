@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ClientStatus } from '../types/ClientStatus'
+import type { ClientStatus } from '../../types/ClientStatus'
 
 defineProps<{
   activeChannelId: string

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LogoutButton from './LogoutButton.vue'
+import LogoutButton from '../auth/LogoutButton.vue'
 </script>
 
 <template>

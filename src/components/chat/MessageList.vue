@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Message } from '../types/Message'
+import type { Message } from '../../types/Message'
 
 defineProps<{ messages: Message[] }>()
 </script>
