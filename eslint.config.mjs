@@ -51,7 +51,7 @@ export default tseslint.config(
             //
             // off
             //
-            'import/prefer-default-export': 'off', // prefer named
+            'import/prefer-default-export': 'off',
             'import/no-named-export': 'off',
             //
             // typescript-eslint
@@ -158,6 +158,7 @@ export default tseslint.config(
                     null: 'never',
                 },
             ],
+            'space-infix-ops': 'error',
             'logical-assignment-operators': 'error',
             'no-console': 'error',
             'no-else-return': [

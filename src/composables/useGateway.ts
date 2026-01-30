@@ -9,13 +9,13 @@ import type { WsGatewayPayload } from '../types/ws/WsGatewayPayload'
 import { createSocketClient } from '../ws/client'
 
 const toLogString = (value: unknown, fallback = ''): string => {
-  if (typeof value==='string') {
+  if (typeof value === 'string') {
     return value
   }
-  if (typeof value==='number' || typeof value==='boolean' || typeof value==='bigint') {
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
     return String(value)
   }
-  if (value==null) {
+  if (value == null) {
     return fallback
   }
   return JSON.stringify(value)
@@ -39,20 +39,20 @@ export const useGateway = () => {
   ])
 
   const filteredMessages = computed(() =>
-    messages.value.filter((message) => message.channelId===activeChannelId.value),
+    messages.value.filter((message) => message.channelId === activeChannelId.value),
   )
 
   const statusLabel = computed(() => {
-    if (status.value==='ready') {
+    if (status.value === 'ready') {
       return 'Ready'
     }
-    if (status.value==='connected') {
+    if (status.value === 'connected') {
       return 'Connected'
     }
-    if (status.value==='connecting') {
+    if (status.value === 'connecting') {
       return 'Connecting'
     }
-    if (status.value==='error') {
+    if (status.value === 'error') {
       return 'Error'
     }
     return 'Disconnected'
@@ -62,7 +62,7 @@ export const useGateway = () => {
     if (gatewayWsUrl) {
       return gatewayWsUrl
     }
-    const protocol = window.location.protocol==='https:' ? 'wss':'ws'
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
     return `${protocol}://${window.location.host}/ws`
   })
 
@@ -89,15 +89,15 @@ export const useGateway = () => {
 
   const handleDispatch = (type: string, payload: Record<string, unknown>) => {
     gatewayLog.value.unshift(`< DISPATCH ${type}`)
-    if (type==='READY') {
+    if (type === 'READY') {
       status.value = 'ready'
       statusNote.value = `User ${toLogString(payload.user_id, 'unknown')}`
       sendSubscribe(activeChannelId.value)
       return
     }
 
-    if (type==='MESSAGE_CREATE') {
-      const content = typeof payload.content==='string' ? payload.content:''
+    if (type === 'MESSAGE_CREATE') {
+      const content = typeof payload.content === 'string' ? payload.content : ''
       const authorId = toLogString(payload.author_user_id, 'User')
       const channelId = toLogString(payload.channel_id, activeChannelId.value)
       const fallbackId = `msg-${Date.now().toString()}`
@@ -116,7 +116,7 @@ export const useGateway = () => {
       return
     }
 
-    if (type==='ERROR') {
+    if (type === 'ERROR') {
       status.value = 'error'
       statusNote.value = `Gateway error: ${toLogString(payload.code, 'Unknown')}`
     }
@@ -124,11 +124,11 @@ export const useGateway = () => {
 
   const handlePayload = (payload: WsGatewayPayload) => {
     gatewayLog.value.unshift(`< ${payload.op}`)
-    if (payload.op==='Hello') {
+    if (payload.op === 'Hello') {
       statusNote.value = `Heartbeat ${String(payload.d.heartbeat_interval_ms)}ms`
       return
     }
-    if (payload.op==='Dispatch') {
+    if (payload.op === 'Dispatch') {
       handleDispatch(payload.d.t, payload.d.d)
     }
   }
@@ -186,7 +186,7 @@ export const useGateway = () => {
     if (!content) {
       return
     }
-    if (status.value!=='ready') {
+    if (status.value !== 'ready') {
       statusNote.value = 'Not ready: login/identify first'
       return
     }
@@ -202,7 +202,7 @@ export const useGateway = () => {
   }
 
   watch(activeChannelId, (channelId) => {
-    if (status.value==='ready') {
+    if (status.value === 'ready') {
       sendSubscribe(channelId)
     }
   })

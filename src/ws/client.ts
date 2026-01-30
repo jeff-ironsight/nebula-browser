@@ -27,10 +27,10 @@ export const createSocketClient = <T>(options: SocketClientOptions<T>) => {
     }
   }
 
-  const isOpen = () => socket?.readyState===WebSocket.OPEN
+  const isOpen = () => socket?.readyState === WebSocket.OPEN
 
   const send = (payload: T) => {
-    if (socket?.readyState!==WebSocket.OPEN) {
+    if (socket?.readyState !== WebSocket.OPEN) {
       return false
     }
     socket.send(JSON.stringify(payload))

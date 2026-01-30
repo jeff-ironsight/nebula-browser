@@ -29,7 +29,7 @@ const addNebulaInterceptor = (instance: AxiosInstance, getToken?: TokenProvider)
       return config
     },
     (error) =>
-      Promise.reject(error instanceof Error ? error:new Error(String(error))),
+      Promise.reject(error instanceof Error ? error : new Error(String(error))),
   )
 
   return instance
@@ -48,7 +48,7 @@ export const useApiClient = () => {
     }
     try {
       return await getAccessTokenSilently({
-        authorizationParams: auth0Audience ? { audience: auth0Audience }:undefined,
+        authorizationParams: auth0Audience ? { audience: auth0Audience } : undefined,
       })
     } catch {
       return null

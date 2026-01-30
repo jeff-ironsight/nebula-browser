@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
 import { Input } from '@/components/ui/input'
@@ -10,13 +10,13 @@ const props = defineProps<{
 
 <template>
   <Input
-    data-slot="sidebar-input"
-    data-sidebar="input"
-    :class="cn(
+      :class="cn(
       'bg-background h-8 w-full shadow-none',
       props.class,
     )"
+      data-sidebar="input"
+      data-slot="sidebar-input"
   >
-    <slot />
+    <slot/>
   </Input>
 </template>
