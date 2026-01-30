@@ -53,3 +53,7 @@ lint:
 editorconfig:
     npx editorconfig-checker \
     -exclude "{{ EDITORCONFIG_IGNORE }}"
+
+[group('DEP')]
+shad-add name:
+    npx shadcn-vue@latest add {{ name }}
