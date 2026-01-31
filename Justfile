@@ -33,6 +33,10 @@ build:
 test:
     npm run test
 
+[group('TEST')]
+coverage:
+    npm test -- --coverage
+
 [group('LINT')]
 typecheck:
     vue-tsc -b

@@ -5,6 +5,10 @@
 
 <br>
 <p align="center">
+  <a href="https://codecov.io/gh/jeff-ironsight/nebula-browser">
+    <img src="https://codecov.io/gh/jeff-ironsight/nebula-browser/branch/main/graph/badge.svg" alt="Coverage" />
+  </a>
+  &nbsp;
   <a href="https://libraries.io/github/jeff-ironsight/nebula-browser">
     <img src="https://img.shields.io/librariesio/github/jeff-ironsight/nebula-browser" alt="Dependencies" />
   </a>

@@ -13,5 +13,21 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/config/test-setup.ts'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,vue}'],
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        'src/components/ui/**',
+        '**/tests/**',
+        '**/*.d.ts',
+        '**/*.test.ts',
+        'src/types/**',
+        '**/env.ts',
+        '**/main.ts',
+        'src/App.vue',
+      ],
+    },
   },
 })
