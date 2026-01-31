@@ -25,4 +25,38 @@ describe('MessageComposer', () => {
     await fireEvent.click(button)
     expect(onSubmit).toHaveBeenCalledTimes(1)
   })
+
+  it('submits on Enter key', async () => {
+    const onSubmit = vi.fn()
+
+    const { getByPlaceholderText } = render(MessageComposer, {
+      props: {
+        modelValue: '',
+        activeChannelId: 'general',
+        onSubmit,
+      },
+    })
+
+    const textarea = getByPlaceholderText('Message #general')
+    await fireEvent.keyDown(textarea, { key: 'Enter' })
+
+    expect(onSubmit).toHaveBeenCalledOnce()
+  })
+
+  it('does not submit on Shift+Enter', async () => {
+    const onSubmit = vi.fn()
+
+    const { getByPlaceholderText } = render(MessageComposer, {
+      props: {
+        modelValue: '',
+        activeChannelId: 'general',
+        onSubmit,
+      },
+    })
+
+    const textarea = getByPlaceholderText('Message #general')
+    await fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: true })
+
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
 })

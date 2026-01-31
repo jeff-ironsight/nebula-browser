@@ -5,7 +5,7 @@ import { Textarea } from '../ui/textarea'
 
 const props = defineProps<{ modelValue: string, activeChannelId: string }>()
 
-defineEmits<{ 'update:modelValue': [value: string]; submit: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: string]; submit: [] }>()
 
 const autoResize = async (event: Event) => {
   await nextTick()
@@ -15,6 +15,13 @@ const autoResize = async (event: Event) => {
   }
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
+}
+
+const onKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault()
+    emit('submit')
+  }
 }
 
 const textAreaPlaceholder = computed(() => `Message #${props.activeChannelId}`)
@@ -28,6 +35,7 @@ const textAreaPlaceholder = computed(() => `Message #${props.activeChannelId}`)
         class="mr-4 min-h-11 max-h-43.75 flex-1 resize-none break-all whitespace-pre-wrap overflow-y-auto rounded-xl border-white/10 bg-white/5 px-3.5 py-3 text-(--ink-strong) shadow-none placeholder:text-(--ink-faint) focus-visible:border-white/20 focus-visible:ring-white/30"
         rows="1"
         @input="autoResize"
+        @keydown="onKeydown"
         @update:model-value="$emit('update:modelValue', $event as string)"
     />
     <Button
