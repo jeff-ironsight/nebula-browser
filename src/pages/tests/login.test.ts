@@ -1,18 +1,18 @@
-import { render } from '@testing-library/vue'
+import { fireEvent, render } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
 
 import Login from '../Login.vue'
 
+const stubs = {
+  LoginButton: {
+    template: '<button>Log In</button>',
+  },
+}
+
 describe('Login', () => {
   it('renders the login prompt and button', () => {
     const { getByText, getByRole, getByAltText } = render(Login, {
-      global: {
-        stubs: {
-          LoginButton: {
-            template: '<button>Log In</button>',
-          },
-        },
-      },
+      global: { stubs },
     })
 
     expect(
@@ -20,5 +20,16 @@ describe('Login', () => {
     ).toBeInTheDocument()
     expect(getByRole('button', { name: /log in/i })).toBeInTheDocument()
     expect(getByAltText('Nebula Logo')).toBeInTheDocument()
+  })
+
+  it('hides image on error', async () => {
+    const { getByAltText } = render(Login, {
+      global: { stubs },
+    })
+    const img = getByAltText('Nebula Logo')
+
+    await fireEvent.error(img)
+
+    expect(img).toHaveStyle({ display: 'none' })
   })
 })
