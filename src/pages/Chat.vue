@@ -39,7 +39,7 @@ const {
           @disconnect="disconnectGateway"
       />
       <MessageList :messages="filteredMessages"/>
-      <MessageComposer v-model="composer" @submit="sendMessage"/>
+      <MessageComposer v-model="composer" :active-channel-id="activeChannelId" @submit="sendMessage"/>
     </main>
   </div>
 </template>

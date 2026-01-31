@@ -11,6 +11,7 @@ describe('MessageComposer', () => {
     const { getByPlaceholderText, getByRole } = render(MessageComposer, {
       props: {
         modelValue: '',
+        activeChannelId: 'general',
         'onUpdate:modelValue': onUpdate,
         onSubmit,
       },

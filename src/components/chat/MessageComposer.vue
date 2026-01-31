@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { nextTick } from 'vue'
+import { computed, nextTick } from 'vue'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 
-defineProps<{ modelValue: string }>()
+const props = defineProps<{ modelValue: string, activeChannelId: string }>()
 
 defineEmits<{ 'update:modelValue': [value: string]; submit: [] }>()
 
@@ -16,14 +16,16 @@ const autoResize = async (event: Event) => {
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
 }
+
+const textAreaPlaceholder = computed(() => `Message #${props.activeChannelId}`)
 </script>
 
 <template>
   <form class="flex items-end gap-3 px-7 pb-6 pt-4.5" @submit.prevent="$emit('submit')">
     <Textarea
         :model-value="modelValue"
+        :placeholder="textAreaPlaceholder"
         class="mr-4 min-h-11 max-h-43.75 flex-1 resize-none break-all whitespace-pre-wrap overflow-y-auto rounded-xl border-white/10 bg-white/5 px-3.5 py-3 text-(--ink-strong) shadow-none placeholder:text-(--ink-faint) focus-visible:border-white/20 focus-visible:ring-white/30"
-        placeholder="Message #general"
         rows="1"
         @input="autoResize"
         @update:model-value="$emit('update:modelValue', $event as string)"
