@@ -15,6 +15,8 @@ export default defineConfig({
     setupFiles: ['./src/config/test-setup.ts'],
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      reportsDirectory: './coverage',
       include: ['src/**/*.{ts,vue}'],
       exclude: [
         '**/node_modules/**',

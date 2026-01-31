@@ -43,3 +43,8 @@ Nebula Browser focuses on exercising the gateway protocol:
 - Minimal UI to validate gateway behavior
 
 This project is intentionally **client-first** and designed as a lightweight harness for validating gateway changes.
+
+#### Reports:
+
+- Coverage: https://jeff-ironsight.github.io/nebula-browser/coverage/
+

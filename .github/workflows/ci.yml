@@ -7,9 +7,15 @@ on:
 
 jobs:
   build-test:
+    name: Build and Test
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     env:
       HUSKY: 0
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,3 +45,24 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Configure Pages
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/configure-pages@v5
+
+      - name: Prepare Pages artifact
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          mkdir -p target/pages/coverage
+          cp -r coverage/* target/pages/coverage/
+
+      - name: Upload Pages artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/pages
+
+      - name: Deploy to GitHub Pages
+        if: ${{ github.event_name == 'push' }}
+        id: deployment
+        uses: actions/deploy-pages@v4
