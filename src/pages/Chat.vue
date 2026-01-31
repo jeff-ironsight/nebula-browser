@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { useWebsocket } from '../ws/useWebsocket.ts'
+import { onMounted } from 'vue'
+import { useChat } from '@/composables/useChat'
 import ChannelList from '../components/sidebar/ChannelList.vue'
 import ChatHeader from '../components/chat/ChatHeader.vue'
 import MessageList from '../components/chat/MessageList.vue'
@@ -14,11 +15,15 @@ const {
   composer,
   channels,
   filteredMessages,
-  connectGateway,
-  disconnectGateway,
+  connect,
+  disconnect,
   sendMessage,
   switchChannel,
-} = useWebsocket()
+} = useChat()
+
+onMounted(() => {
+  connect()
+})
 </script>
 
 <template>
@@ -35,8 +40,8 @@ const {
           :status="status"
           :status-label="statusLabel"
           :status-note="statusNote"
-          @connect="connectGateway"
-          @disconnect="disconnectGateway"
+          @connect="connect"
+          @disconnect="disconnect"
       />
       <MessageList :messages="filteredMessages"/>
       <MessageComposer v-model="composer" :active-channel-id="activeChannelId" @submit="sendMessage"/>
