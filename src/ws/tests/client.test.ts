@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { WsGatewayPayload } from '../../types/ws/WsGatewayPayload'
+import type { WsGatewayPayload } from '../../types/ws/outgoing/WsGatewayPayload.ts'
 import { createSocketClient } from '../client'
 
 type Listener = (event?: { data?: string }) => void

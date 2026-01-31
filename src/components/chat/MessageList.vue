@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Message } from '../../types/Message'
+import type { Message } from '@/types/Message.ts'
 
 defineProps<{ messages: Message[] }>()
 </script>
@@ -12,12 +12,10 @@ defineProps<{ messages: Message[] }>()
         :style="{ '--stagger': `${index * 40}ms` }"
         class="message"
     >
-      <div class="message-avatar">
-        {{ message.author.slice(0, 1) }}
-      </div>
+      <div class="message-avatar"/>
       <div class="message-body">
         <div class="message-meta">
-          <span class="message-author">{{ message.author }}</span>
+          <span class="message-author">{{ message.authorUsername }}</span>
           <span class="message-time">{{ message.time }}</span>
         </div>
         <div class="message-text">{{ message.content }}</div>

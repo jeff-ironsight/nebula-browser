@@ -13,7 +13,8 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       const message = {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'Hello world',
         time: '10:30 AM',
         channelId: 'general',
@@ -29,7 +30,8 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       const message = {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'Hello',
         time: '10:30 AM',
         channelId: 'random',
@@ -44,14 +46,16 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       const message1 = {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'First',
         time: '10:30 AM',
         channelId: 'general',
       }
       const message2 = {
         id: 'msg-2',
-        author: 'User def456',
+        authorUserId: 'def123',
+        authorUsername: 'User def123',
         content: 'Second',
         time: '10:31 AM',
         channelId: 'general',
@@ -77,7 +81,8 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       const message = {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'Hello',
         time: '10:30 AM',
         channelId: 'general',
@@ -98,7 +103,8 @@ describe('useMessageStore', () => {
 
       store.addMessage('general', {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'Hello',
         time: '10:30 AM',
         channelId: 'general',
@@ -113,7 +119,8 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       store.addMessage('general', {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'Hello',
         time: '10:30 AM',
         channelId: 'general',
@@ -129,14 +136,16 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       store.addMessage('general', {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'General message',
         time: '10:30 AM',
         channelId: 'general',
       })
       store.addMessage('random', {
         id: 'msg-2',
-        author: 'User def456',
+        authorUserId: 'def456',
+        authorUsername: 'User def456',
         content: 'Random message',
         time: '10:31 AM',
         channelId: 'random',
@@ -154,15 +163,16 @@ describe('useMessageStore', () => {
       const store = useMessageStore()
       store.addMessage('general', {
         id: 'msg-1',
-        author: 'User abc123',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
         content: 'General message',
         time: '10:30 AM',
         channelId: 'general',
       })
       store.addMessage('random', {
         id: 'msg-2',
-        author: 'User def456',
-        content: 'Random message',
+        authorUserId: 'def456',
+        authorUsername: 'User def456', content: 'Random message',
         time: '10:31 AM',
         channelId: 'random',
       })

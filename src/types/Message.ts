@@ -1,6 +1,7 @@
 export interface Message {
   id: string
-  author: string
+  authorUserId: string
+  authorUsername: string
   content: string
   time: string
   channelId: string

@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import type { Channel } from '@/types/Channel'
-import type { DispatchEvent } from '@/types/ws/DispatchEvent'
+import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
 import { useWebsocket } from '@/ws/useWebsocket'
 
 export const useChat = () => {
@@ -27,7 +27,7 @@ export const useChat = () => {
     websocket.send({ op: 'Subscribe', d: { channel_id: channelId } })
   }
 
-  const handleDispatch = (event: DispatchEvent) => {
+  const handleDispatch = (event: DispatchPayload) => {
     if (event.t === 'READY') {
       authStore.setCurrentUser({
         id: event.d.user_id,
@@ -43,7 +43,8 @@ export const useChat = () => {
     if (event.t === 'MESSAGE_CREATE') {
       messageStore.addMessage(event.d.channel_id, {
         id: event.d.id,
-        author: `User ${event.d.author_user_id.slice(0, 6)}`,
+        authorUserId: event.d.author_user_id,
+        authorUsername: event.d.author_username,
         content: event.d.content,
         time: new Date(event.d.timestamp).toLocaleTimeString('en-US', {
           hour: 'numeric',

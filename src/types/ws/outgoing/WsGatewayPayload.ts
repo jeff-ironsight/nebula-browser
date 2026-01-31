@@ -1,4 +1,4 @@
-import type { DispatchEvent } from './DispatchEvent.ts';
+import type { DispatchPayload } from '../incoming/DispatchPayload.ts';
 import type { HelloEvent } from './HelloEvent.ts';
 import type { IdentifyEvent } from './IdentifyEvent.ts';
 import type { MessageCreateEvent } from './MessageCreateEvent.ts';
@@ -9,4 +9,4 @@ export type WsGatewayPayload =
   | { op: 'Identify'; d: IdentifyEvent }
   | { op: 'Subscribe'; d: SubscribeEvent }
   | { op: 'MessageCreate'; d: MessageCreateEvent }
-  | { op: 'Dispatch'; d: DispatchEvent }
+  | { op: 'Dispatch'; d: DispatchPayload }

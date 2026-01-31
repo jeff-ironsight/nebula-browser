@@ -1,14 +1,14 @@
 import { useAuth0 } from '@auth0/auth0-vue'
-import type {Ref} from 'vue';
+import type { Ref } from 'vue';
 import { computed, onBeforeUnmount, ref } from 'vue'
 
 import { gatewayWsUrl } from '../config/env.ts'
 import type { ClientStatus } from '../types/ClientStatus.ts'
-import type { DispatchEvent } from '../types/ws/DispatchEvent.ts'
-import type { WsGatewayPayload } from '../types/ws/WsGatewayPayload.ts'
+import type { DispatchPayload } from '../types/ws/incoming/DispatchPayload.ts'
+import type { WsGatewayPayload } from '../types/ws/outgoing/WsGatewayPayload.ts'
 import { createSocketClient } from './client.ts'
 
-type DispatchHandler = (event: DispatchEvent) => void
+type DispatchHandler = (event: DispatchPayload) => void
 
 export interface WebsocketContext {
   status: Ref<ClientStatus>
