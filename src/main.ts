@@ -19,6 +19,8 @@ app.use(
       redirect_uri: window.location.origin,
       audience: VITE_AUTH0_AUDIENCE,
     },
+    useRefreshTokens: true,
+    cacheLocation: 'localstorage',
   }),
 )
 
