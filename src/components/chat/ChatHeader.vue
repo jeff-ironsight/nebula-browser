@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { ClientStatus } from '@/types/ClientStatus.ts'
 import DebugLogSheet from './DebugLogSheet.vue'
+import { useAuthStore } from "@/store/auth.store.ts";
 
 const props = defineProps<{
   activeChannelId: string
@@ -11,6 +12,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ connect: []; disconnect: [] }>()
+
+const authStore = useAuthStore()
 
 const handleStatusAction = () => {
   if (props.status === 'disconnected' || props.status === 'error') {
@@ -32,7 +35,7 @@ const handleStatusAction = () => {
     </div>
     <div class="flex items-center gap-4">
       <div class="flex items-center justify-end gap-2">
-        <DebugLogSheet :gateway-log="gatewayLog"/>
+        <DebugLogSheet v-if="authStore.isDeveloper" :gateway-log="gatewayLog"/>
         <button
             :class="[
               'ml-1 rounded-[10px] px-3 py-1.5 text-[0.75rem] uppercase tracking-[0.06em]',

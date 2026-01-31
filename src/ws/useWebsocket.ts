@@ -1,12 +1,15 @@
 import { useAuth0 } from '@auth0/auth0-vue'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
-import { gatewayWsUrl } from '../config/env'
-import type { Channel } from '../types/Channel'
-import type { ClientStatus } from '../types/ClientStatus'
-import type { Message } from '../types/Message'
-import type { WsGatewayPayload } from '../types/ws/WsGatewayPayload'
-import { createSocketClient } from '../ws/client'
+import { useAuthStore } from '@/store/auth.store.ts';
+import type { DispatchEvent } from '@/types/ws/DispatchEvent.ts';
+
+import { gatewayWsUrl } from '../config/env.ts'
+import type { Channel } from '../types/Channel.ts'
+import type { ClientStatus } from '../types/ClientStatus.ts'
+import type { Message } from '../types/Message.ts'
+import type { WsGatewayPayload } from '../types/ws/WsGatewayPayload.ts'
+import { createSocketClient } from './client.ts'
 
 const toLogString = (value: unknown, fallback = ''): string => {
   if (typeof value === 'string') {
@@ -21,7 +24,7 @@ const toLogString = (value: unknown, fallback = ''): string => {
   return JSON.stringify(value)
 }
 
-export const useGateway = () => {
+export const useWebsocket = () => {
   const { getAccessTokenSilently, isAuthenticated, user } = useAuth0()
 
   const status = ref<ClientStatus>('disconnected')
@@ -32,6 +35,8 @@ export const useGateway = () => {
   const activeChannelId = ref('general')
   const composer = ref('')
   const messages = ref<Message[]>([])
+
+  const { setCurrentUser } = useAuthStore()
 
   const channels = ref<Channel[]>([
     { id: 'general', name: 'general', type: 'text' },
@@ -87,27 +92,31 @@ export const useGateway = () => {
     sendPayload({ op: 'Subscribe', d: { channel_id: channelId } })
   }
 
-  const handleDispatch = (type: string, payload: Record<string, unknown>) => {
-    gatewayLog.value.unshift(`< DISPATCH ${type}`)
-    if (type === 'READY') {
+  const handleDispatch = (event: DispatchEvent) => {
+    gatewayLog.value.unshift(`< DISPATCH ${event.t}`)
+    if (event.t === 'READY') {
+      setCurrentUser({
+        id: event.d.user_id,
+        username: event.d.username,
+        isDeveloper: event.d.is_developer,
+      })
       status.value = 'ready'
-      statusNote.value = `User ${toLogString(payload.user_id, 'unknown')}`
+      statusNote.value = `User ${toLogString(event.d.username, 'unknown')}`
       sendSubscribe(activeChannelId.value)
       return
     }
 
-    if (type === 'MESSAGE_CREATE') {
-      const content = typeof payload.content === 'string' ? payload.content : ''
-      const authorId = toLogString(payload.author_user_id, 'User')
-      const channelId = toLogString(payload.channel_id, activeChannelId.value)
+    if (event.t === 'MESSAGE_CREATE') {
+      const authorId = toLogString(event.d.author_user_id, 'User')
+      const channelId = toLogString(event.d.channel_id, activeChannelId.value)
       const fallbackId = `msg-${Date.now().toString()}`
-      const messageId = toLogString(payload.id, fallbackId) || fallbackId
+      const messageId = toLogString(event.d.id, fallbackId) || fallbackId
 
       messages.value.push({
         id: messageId,
         author: `User ${authorId.slice(0, 6)}`,
-        content,
-        time: new Date().toLocaleTimeString('en-US', {
+        content: event.d.content,
+        time: new Date(event.d.timestamp).toLocaleTimeString('en-US', {
           hour: 'numeric',
           minute: '2-digit',
         }),
@@ -115,11 +124,8 @@ export const useGateway = () => {
       })
       return
     }
-
-    if (type === 'ERROR') {
-      status.value = 'error'
-      statusNote.value = `Gateway error: ${toLogString(payload.code, 'Unknown')}`
-    }
+    status.value = 'error'
+    statusNote.value = `Gateway error: ${toLogString(event.d.code, 'Unknown')}`
   }
 
   const handlePayload = (payload: WsGatewayPayload) => {
@@ -129,7 +135,7 @@ export const useGateway = () => {
       return
     }
     if (payload.op === 'Dispatch') {
-      handleDispatch(payload.d.t, payload.d.d)
+      handleDispatch(payload.d)
     }
   }
 
