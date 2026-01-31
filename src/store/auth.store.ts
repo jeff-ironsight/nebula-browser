@@ -1,3 +1,5 @@
+import 'pinia-plugin-persistedstate';
+
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
@@ -19,4 +21,4 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     setCurrentUser,
   }
-})
+}, { persist: true })

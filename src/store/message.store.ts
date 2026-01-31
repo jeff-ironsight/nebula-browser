@@ -1,3 +1,5 @@
+import 'pinia-plugin-persistedstate'
+
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -29,4 +31,4 @@ export const useMessageStore = defineStore('messages', () => {
     clearChannel,
     clearAll,
   }
-})
+}, { persist: true })

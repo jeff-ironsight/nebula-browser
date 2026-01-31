@@ -3,6 +3,7 @@ import './style.app.css'
 
 import { createAuth0 } from '@auth0/auth0-vue'
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
 
 import App from './App.vue'
@@ -23,7 +24,8 @@ app.use(
     cacheLocation: 'localstorage',
   }),
 )
-
-app.use(createPinia())
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate)
+app.use(pinia)
 
 app.mount('#app')
