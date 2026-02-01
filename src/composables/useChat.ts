@@ -3,6 +3,8 @@ import { computed, ref, watch } from 'vue'
 import { useGetServerChannels, useGetServers } from '@/api/server.api.ts'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
+import { mapCurrentUserFromJson } from '@/types/CurrentUserContext.ts'
+import { mapMessageFromJson } from '@/types/Message.ts'
 import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
 import { useWebsocket } from '@/ws/useWebsocket'
 
@@ -36,11 +38,7 @@ export const useChat = () => {
 
   const handleDispatch = (event: DispatchPayload) => {
     if (event.t === 'READY') {
-      authStore.setCurrentUser({
-        id: event.d.user_id,
-        username: event.d.username,
-        isDeveloper: event.d.is_developer,
-      })
+      authStore.setCurrentUser(mapCurrentUserFromJson(event.d))
       websocket.statusNote.value = `User ${event.d.username}`
       websocket.status.value = 'ready'
       if (activeChannelId.value) {
@@ -50,17 +48,7 @@ export const useChat = () => {
     }
 
     if (event.t === 'MESSAGE_CREATE') {
-      messageStore.addMessage(event.d.channel_id, {
-        id: event.d.id,
-        authorUserId: event.d.author_user_id,
-        authorUsername: event.d.author_username,
-        content: event.d.content,
-        time: new Date(event.d.timestamp).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-        }),
-        channelId: event.d.channel_id,
-      })
+      messageStore.addMessage(event.d.channel_id, mapMessageFromJson(event.d))
       return
     }
 
@@ -104,6 +92,7 @@ export const useChat = () => {
   }
 
   watch(activeChannelId, (channelId) => {
+    messageStore.setActiveChannel(channelId)
     if (websocket.status.value === 'ready') {
       sendSubscribe(channelId)
     }
@@ -145,6 +134,7 @@ export const useChat = () => {
     servers,
     channels,
     filteredMessages,
+    getUnreadCount: messageStore.getUnreadCount,
 
     // Actions
     connect,
