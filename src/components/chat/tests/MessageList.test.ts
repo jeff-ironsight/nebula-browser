@@ -21,8 +21,8 @@ describe('MessageList', () => {
       props: { messages: [] },
     })
 
-    expect(container.querySelector('.messages')).toBeInTheDocument()
-    expect(container.querySelectorAll('.message')).toHaveLength(0)
+    expect(container.querySelector('section')).toBeInTheDocument()
+    expect(container.querySelectorAll('article')).toHaveLength(0)
   })
 
   it('renders messages with author and content', () => {
@@ -51,7 +51,7 @@ describe('MessageList', () => {
     expect(getByText('2:45 PM')).toBeInTheDocument()
   })
 
-  it('applies stagger animation style based on index', () => {
+  it('applies stagger animation delay based on index', () => {
     const messages = [
       createMessage({ id: 'msg-1' }),
       createMessage({ id: 'msg-2' }),
@@ -62,9 +62,9 @@ describe('MessageList', () => {
       props: { messages },
     })
 
-    const messageElements = container.querySelectorAll('.message')
-    expect(messageElements[0]).toHaveStyle('--stagger: 0ms')
-    expect(messageElements[1]).toHaveStyle('--stagger: 40ms')
-    expect(messageElements[2]).toHaveStyle('--stagger: 80ms')
+    const messageElements = container.querySelectorAll('article')
+    expect(messageElements[0]).toHaveStyle('animation-delay: 0ms')
+    expect(messageElements[1]).toHaveStyle('animation-delay: 40ms')
+    expect(messageElements[2]).toHaveStyle('animation-delay: 80ms')
   })
 })

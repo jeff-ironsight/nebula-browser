@@ -31,16 +31,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="shell">
+  <div
+      class="grid grid-cols-[minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[300px_minmax(0,1fr)] min-h-screen text-[#f4f5f7] animate-[shell-fade_0.6s_ease-out_both]">
     <AppSideBar
         :active-channel-id="activeChannelId"
         :active-server-id="activeServerId"
         :channels="channels"
         :servers="servers"
+        class="hidden md:flex"
         @switch-channel="switchChannel"
         @switch-server="switchServer"
     />
-    <main class="chat">
+    <main class="grid grid-rows-[auto_1fr_auto] bg-[#2c3240]">
       <ChatHeader
           :active-channel-name="activeChannelName"
           :gateway-log="gatewayLog"

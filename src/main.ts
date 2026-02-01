@@ -1,5 +1,4 @@
 import './style.css'
-import './style.app.css'
 
 import { createAuth0 } from '@auth0/auth0-vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
