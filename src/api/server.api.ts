@@ -13,7 +13,7 @@ import { mapServerFromJson } from '@/types/Server.ts'
 const serversEndpoint = `${BASE_API_ENDPOINT}/servers`;
 
 export function useGetServers() {
-  return useQuery({
+  return useQuery<Server[]>({
     queryKey: ['servers'],
     retry: 3,
     queryFn: async ({ signal }) => {
@@ -52,16 +52,18 @@ async function createServer(data: { name: string }) {
 }
 
 export function useGetServerChannels(serverId: Ref<string>) {
-  const id = computed(() => unref(serverId));
-  return useQuery<Channel[]>({
-    queryKey: computed(() => ['servers', id.value, 'channels']),
-    retry: 3,
-    queryFn: async ({ signal }) => {
-      const result = await getServerChannels(serverId.value, signal)
-      return result.map(mapChannelFromJson)
-    },
-    enabled: computed(() => !!id.value),
-  });
+  const id = computed(() => unref(serverId))
+  return useQuery<Channel[]>(
+    computed(() => ({
+      queryKey: ['servers', id.value, 'channels'],
+      retry: 3,
+      queryFn: async ({ signal }) => {
+        const result = await getServerChannels(id.value, signal)
+        return result.map(mapChannelFromJson)
+      },
+      enabled: !!id.value,
+    }))
+  )
 }
 
 async function getServerChannels(serverId: string, signal?: AbortSignal) {

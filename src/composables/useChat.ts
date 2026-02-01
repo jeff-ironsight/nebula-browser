@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 
-import { useGetServerChannels } from '@/api/server.api.ts'
+import { useGetServerChannels, useGetServers } from '@/api/server.api.ts'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
@@ -10,8 +10,11 @@ export const useChat = () => {
   const websocket = useWebsocket()
   const authStore = useAuthStore()
   const messageStore = useMessageStore()
-  const activeServerId = ref('00000000-0000-0000-0000-000000000001')
   const composer = ref('')
+
+  const { data: serversQuery } = useGetServers()
+  const servers = computed(() => serversQuery.value ?? [])
+  const activeServerId = computed(() => servers.value[0]?.id ?? '')
 
   const activeChannelId = ref('')
   const { data: channelsQuery } = useGetServerChannels(activeServerId)
@@ -40,7 +43,9 @@ export const useChat = () => {
       })
       websocket.statusNote.value = `User ${event.d.username}`
       websocket.status.value = 'ready'
-      sendSubscribe(activeChannelId.value)
+      if (activeChannelId.value) {
+        sendSubscribe(activeChannelId.value)
+      }
       return
     }
 

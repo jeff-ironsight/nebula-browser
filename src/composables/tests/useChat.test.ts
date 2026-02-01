@@ -24,11 +24,17 @@ vi.mock('@/ws/useWebsocket', () => ({
 }))
 
 vi.mock('@/api/server.api.ts', () => ({
+  useGetServers: () => ({
+    data: ref([
+      { id: 'server-1', name: 'Server 1', ownerUserId: 'owner-1' },
+    ]),
+  }),
   useGetServerChannels: () => ({
     data: ref([
       { id: 'general', name: 'general', type: 'text' },
       { id: 'random', name: 'random', type: 'text' },
     ]),
+    refetch: vi.fn(),
   }),
 }))
 
