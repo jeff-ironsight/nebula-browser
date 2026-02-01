@@ -15,11 +15,16 @@ vi.mock('@/composables/useChat', () => ({
     statusNote: ref('Idle'),
     statusLabel: ref('Disconnected'),
     gatewayLog: ref<string[]>([]),
+    activeServerId: ref('server-1'),
     activeChannelId: ref('general'),
+    activeChannelName: ref('general'),
     composer: ref(''),
+    servers: ref([
+      { id: 'server-1', name: 'My Server', ownerUserId: 'user-1' },
+    ]),
     channels: ref([
-      { id: 'general', name: 'general', type: 'text' },
-      { id: 'random', name: 'random', type: 'text' },
+      { id: 'general', name: 'general', serverId: 'server-1' },
+      { id: 'random', name: 'random', serverId: 'server-1' },
     ]),
     filteredMessages: ref([]),
     connect: mockConnect,
@@ -31,13 +36,13 @@ vi.mock('@/composables/useChat', () => ({
 
 describe('Chat', () => {
   const stubs = {
-    ChannelList: {
-      template: '<div data-testid="channel-list" />',
-      props: ['activeChannelId', 'channels'],
+    AppSideBar: {
+      template: '<div data-testid="app-sidebar" />',
+      props: ['activeServerId', 'activeChannelId', 'servers', 'channels'],
     },
     ChatHeader: {
       template: '<div data-testid="chat-header" />',
-      props: ['activeChannelId', 'gatewayLog', 'status', 'statusLabel', 'statusNote'],
+      props: ['activeChannelName', 'gatewayLog', 'status', 'statusLabel', 'statusNote'],
     },
     MessageList: {
       template: '<div data-testid="message-list" />',
@@ -45,14 +50,14 @@ describe('Chat', () => {
     },
     MessageComposer: {
       template: '<div data-testid="message-composer" />',
-      props: ['modelValue', 'activeChannelId'],
+      props: ['modelValue', 'activeChannelName'],
     },
   }
 
   it('renders all child components', () => {
     const { getByTestId } = render(Chat, { global: { stubs } })
 
-    expect(getByTestId('channel-list')).toBeInTheDocument()
+    expect(getByTestId('app-sidebar')).toBeInTheDocument()
     expect(getByTestId('chat-header')).toBeInTheDocument()
     expect(getByTestId('message-list')).toBeInTheDocument()
     expect(getByTestId('message-composer')).toBeInTheDocument()

@@ -1,24 +1,27 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { useChat } from '@/composables/useChat'
-import ChannelList from '../components/sidebar/ChannelList.vue'
 import ChatHeader from '../components/chat/ChatHeader.vue'
 import MessageList from '../components/chat/MessageList.vue'
 import MessageComposer from '../components/chat/MessageComposer.vue'
+import AppSideBar from '@/components/sidebar/AppSideBar.vue'
 
 const {
   status,
   statusNote,
   statusLabel,
   gatewayLog,
+  activeServerId,
   activeChannelId,
   activeChannelName,
   composer,
+  servers,
   channels,
   filteredMessages,
   connect,
   disconnect,
   sendMessage,
+  switchServer,
   switchChannel,
 } = useChat()
 
@@ -29,10 +32,13 @@ onMounted(() => {
 
 <template>
   <div class="shell">
-    <ChannelList
+    <AppSideBar
         :active-channel-id="activeChannelId"
+        :active-server-id="activeServerId"
         :channels="channels"
-        @switch="switchChannel"
+        :servers="servers"
+        @switch-channel="switchChannel"
+        @switch-server="switchServer"
     />
     <main class="chat">
       <ChatHeader
