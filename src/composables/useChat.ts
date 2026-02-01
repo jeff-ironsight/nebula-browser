@@ -1,11 +1,12 @@
 import { computed, ref, watch } from 'vue'
 
-import { useGetServerChannels, useGetServers } from '@/api/server.api.ts'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import { mapCurrentUserFromJson } from '@/types/CurrentUserContext.ts'
+import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.ts'
 import { mapMessageFromJson } from '@/types/Message.ts'
-import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
+import type { Server } from '@/types/Server.ts'
+import { mapServerFromJson } from '@/types/Server.ts'
 import { useWebsocket } from '@/ws/useWebsocket'
 
 export const useChat = () => {
@@ -14,13 +15,13 @@ export const useChat = () => {
   const messageStore = useMessageStore()
   const composer = ref('')
 
+  const servers = ref<Server[]>([])
   const activeServerId = ref('')
-  const { data: serversQuery } = useGetServers()
-  const servers = computed(() => serversQuery.value ?? [])
 
   const activeChannelId = ref('')
-  const { data: channelsQuery } = useGetServerChannels(activeServerId)
-  const channels = computed(() => channelsQuery.value ?? [])
+  const channels = computed(() =>
+    servers.value.find((s) => s.id === activeServerId.value)?.channels ?? []
+  )
   const activeChannel = computed(() =>
     channels.value.find((c) => c.id === activeChannelId.value)
   )
@@ -37,23 +38,40 @@ export const useChat = () => {
   }
 
   const handleDispatch = (event: DispatchPayload) => {
-    if (event.t === 'READY') {
-      authStore.setCurrentUser(mapCurrentUserFromJson(event.d))
-      websocket.statusNote.value = `User ${event.d.username}`
-      websocket.status.value = 'ready'
-      if (activeChannelId.value) {
-        sendSubscribe(activeChannelId.value)
+    switch (event.t) {
+      case 'READY': {
+        const data = event.d
+        authStore.setCurrentUser(mapCurrentUserFromJson(data))
+        servers.value = data.servers.map(mapServerFromJson)
+
+        // Set defaults if not already set
+        if (!activeServerId.value && servers.value.length > 0) {
+          activeServerId.value = servers.value[0]!.id
+        }
+        const currentChannels = servers.value.find((s) => s.id === activeServerId.value)?.channels ?? []
+        if (!activeChannelId.value && currentChannels.length > 0) {
+          activeChannelId.value = currentChannels[0]!.id
+        }
+
+        websocket.statusNote.value = `User ${data.username}`
+        websocket.status.value = 'ready'
+        if (activeChannelId.value) {
+          sendSubscribe(activeChannelId.value)
+        }
+        break
       }
-      return
+      case 'MESSAGE_CREATE': {
+        const data = event.d
+        messageStore.addMessage(data.channel_id, mapMessageFromJson(data))
+        break
+      }
+      case 'ERROR': {
+        const data = event.d
+        websocket.status.value = 'error'
+        websocket.statusNote.value = `Gateway error: ${data.code}`
+        break
+      }
     }
-
-    if (event.t === 'MESSAGE_CREATE') {
-      messageStore.addMessage(event.d.channel_id, mapMessageFromJson(event.d))
-      return
-    }
-
-    websocket.status.value = 'error'
-    websocket.statusNote.value = `Gateway error: ${event.d.code}`
   }
 
   websocket.onDispatch(handleDispatch)

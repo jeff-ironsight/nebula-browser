@@ -1,4 +1,4 @@
-import type { ChannelResponse } from '@/types/api/ChannelResponse.ts'
+import type { ChannelResponse } from '@/types/gateway/incoming/ChannelResponse.ts'
 
 export interface Channel {
   id: string

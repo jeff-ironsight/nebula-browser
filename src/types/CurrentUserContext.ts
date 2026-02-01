@@ -1,4 +1,4 @@
-import type { ReadyEvent } from '@/types/ws/incoming/ReadyEvent.ts'
+import type { ReadyEvent } from '@/types/gateway/incoming/ReadyEvent.ts'
 
 export interface CurrentUserContext {
   id: string

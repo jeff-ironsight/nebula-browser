@@ -1,4 +1,4 @@
-import type { MessageCreatedEvent } from '@/types/ws/incoming/MessageCreatedEvent.ts'
+import type { MessageCreatedEvent } from '@/types/gateway/incoming/MessageCreatedEvent.ts'
 
 export interface Message {
   id: string

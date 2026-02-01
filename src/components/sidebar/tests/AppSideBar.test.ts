@@ -5,8 +5,8 @@ import AppSideBar from '../AppSideBar.vue'
 
 describe('AppSideBar', () => {
   const servers = [
-    { id: 'server-1', name: 'My Server', ownerUserId: 'user-1' },
-    { id: 'server-2', name: 'Other Server', ownerUserId: 'user-2' },
+    { id: 'server-1', name: 'My Server', ownerUserId: 'user-1', channels: [] },
+    { id: 'server-2', name: 'Other Server', ownerUserId: 'user-2', channels: [] },
   ]
 
   const channels = [

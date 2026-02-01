@@ -4,7 +4,7 @@ import { ref } from 'vue'
 
 import { useAuthStore } from '@/store/auth.store.ts'
 import { useMessageStore } from '@/store/message.store.ts'
-import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
+import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.ts'
 
 import { useChat } from '../useChat'
 
@@ -23,20 +23,32 @@ vi.mock('@/ws/useWebsocket', () => ({
   useWebsocket: () => mockWebsocket,
 }))
 
-vi.mock('@/api/server.api.ts', () => ({
-  useGetServers: () => ({
-    data: ref([
-      { id: 'server-1', name: 'Server 1', ownerUserId: 'owner-1' },
-    ]),
-  }),
-  useGetServerChannels: () => ({
-    data: ref([
-      { id: 'general', name: 'general', type: 'text' },
-      { id: 'random', name: 'random', type: 'text' },
-    ]),
-    refetch: vi.fn(),
-  }),
-}))
+const mockReadyEvent = {
+  t: 'READY' as const,
+  d: {
+    connection_id: 'connection_id',
+    user_id: 'user-123',
+    username: 'testuser',
+    is_developer: true,
+    heartbeat_interval_ms: 25000,
+    servers: [
+      {
+        id: 'server-1',
+        name: 'Server 1',
+        owner_user_id: 'owner-1',
+        channels: [
+          { id: 'general', name: 'general', server_id: 'server-1' },
+          { id: 'random', name: 'random', server_id: 'server-1' },
+        ],
+      },
+    ],
+  },
+}
+
+const dispatchReady = () => {
+  const handler = mockWebsocket.onDispatch.mock.calls[0]![0] as (e: typeof mockReadyEvent) => void
+  handler(mockReadyEvent)
+}
 
 describe('useChat', () => {
   beforeEach(() => {
@@ -51,10 +63,21 @@ describe('useChat', () => {
     it('returns initial chat state', () => {
       const chat = useChat()
 
-      expect(chat.activeChannelId.value).toBe('general')
+      expect(chat.activeChannelId.value).toBe('')
       expect(chat.composer.value).toBe('')
+      expect(chat.servers.value).toHaveLength(0)
+      expect(chat.channels.value).toHaveLength(0)
+    })
+
+    it('hydrates servers and channels from READY', () => {
+      const chat = useChat()
+      dispatchReady()
+
+      expect(chat.servers.value).toHaveLength(1)
+      expect(chat.activeServerId.value).toBe('server-1')
       expect(chat.channels.value).toHaveLength(2)
-      expect(chat.channels.value[0]).toEqual({ id: 'general', name: 'general', type: 'text' })
+      expect(chat.activeChannelId.value).toBe('general')
+      expect(chat.channels.value[0]).toEqual({ id: 'general', name: 'general', serverId: 'server-1' })
     })
 
     it('exposes websocket status', () => {
@@ -125,6 +148,7 @@ describe('useChat', () => {
     it('sends message and clears composer when ready', () => {
       mockWebsocket.status.value = 'ready'
       const chat = useChat()
+      dispatchReady()
       chat.composer.value = 'Hello world'
 
       chat.sendMessage()
@@ -140,6 +164,7 @@ describe('useChat', () => {
   describe('switchChannel', () => {
     it('updates active channel', () => {
       const chat = useChat()
+      dispatchReady()
 
       chat.switchChannel('random')
 
@@ -149,6 +174,8 @@ describe('useChat', () => {
     it('sends subscribe when status is ready', async () => {
       mockWebsocket.status.value = 'ready'
       const chat = useChat()
+      dispatchReady()
+      mockWebsocket.send.mockClear()
 
       chat.switchChannel('random')
       await vi.waitFor(() => {
@@ -172,26 +199,17 @@ describe('useChat', () => {
 
   describe('dispatch handling', () => {
     it('handles READY event', () => {
-      useChat()
+      const chat = useChat()
       const authStore = useAuthStore()
-      const handler = mockWebsocket.onDispatch.mock.calls[0]![0] as (e: DispatchPayload) => void
-
-      handler({
-        t: 'READY',
-        d: {
-          connection_id: 'connection_id',
-          user_id: 'user-123',
-          username: 'testuser',
-          is_developer: true,
-          heartbeat_interval_ms: 25000
-        },
-      })
+      dispatchReady()
 
       expect(authStore.currentUser).toEqual({
         id: 'user-123',
         username: 'testuser',
         isDeveloper: true,
       })
+      expect(chat.servers.value).toHaveLength(1)
+      expect(chat.servers.value[0]!.channels).toHaveLength(2)
       expect(mockWebsocket.statusNote.value).toBe('User testuser')
       expect(mockWebsocket.status.value).toBe('ready')
       expect(mockWebsocket.send).toHaveBeenCalledWith({
@@ -247,6 +265,7 @@ describe('useChat', () => {
     it('returns messages for active channel', () => {
       const chat = useChat()
       const messageStore = useMessageStore()
+      dispatchReady()
 
       messageStore.addMessage('general', {
         id: 'm1',

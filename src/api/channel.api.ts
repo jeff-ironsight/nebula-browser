@@ -3,9 +3,9 @@ import type { Ref } from 'vue';
 import { computed, watch } from 'vue';
 
 import { BASE_API_ENDPOINT, useApi } from '@/api/client.ts'
-import type { ChannelResponse } from '@/types/api/ChannelResponse.ts'
 import type { Channel } from '@/types/Channel.ts';
 import { mapChannelFromJson } from '@/types/Channel.ts'
+import type { ChannelResponse } from '@/types/gateway/incoming/ChannelResponse.ts'
 
 const channelsEndpoint = `${BASE_API_ENDPOINT}/channels`;
 

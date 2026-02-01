@@ -1,11 +1,12 @@
 import { useAuth0 } from '@auth0/auth0-vue'
-import type { Ref } from 'vue';
-import { computed, onBeforeUnmount, ref } from 'vue'
+import type { Ref } from 'vue'
+import { computed, getCurrentInstance, onBeforeUnmount, ref } from 'vue'
+
+import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.ts'
+import type { WsGatewayPayload } from '@/types/gateway/outgoing/WsGatewayPayload.ts'
 
 import { gatewayWsUrl } from '../config/env.ts'
 import type { ClientStatus } from '../types/ClientStatus.ts'
-import type { DispatchPayload } from '../types/ws/incoming/DispatchPayload.ts'
-import type { WsGatewayPayload } from '../types/ws/outgoing/WsGatewayPayload.ts'
 import { createSocketClient } from './client.ts'
 
 type DispatchHandler = (event: DispatchPayload) => void
@@ -136,10 +137,12 @@ export const useWebsocket = (): WebsocketContext => {
     dispatchHandlers.push(handler)
   }
 
-  onBeforeUnmount(() => {
-    socketClient?.disconnect()
-    socketClient = null
-  })
+  if (getCurrentInstance()) {
+    onBeforeUnmount(() => {
+      socketClient?.disconnect()
+      socketClient = null
+    })
+  }
 
   return {
     status,

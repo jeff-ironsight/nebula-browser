@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 
-import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
+import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.ts'
 
 import { createSocketClient } from '../client'
 import { useWebsocket } from '../useWebsocket'
@@ -227,7 +227,8 @@ describe('useWebsocket', () => {
           user_id: 'u1',
           username: 'testuser',
           is_developer: false,
-          heartbeat_interval_ms: 25000
+          heartbeat_interval_ms: 25000,
+          servers: [],
         },
       }
       onMessage!({ op: 'Dispatch', d: dispatchPayload })
