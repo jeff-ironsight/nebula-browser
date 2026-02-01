@@ -11,7 +11,7 @@ describe('MessageComposer', () => {
     const { getByPlaceholderText, getByRole } = render(MessageComposer, {
       props: {
         modelValue: '',
-        activeChannelId: 'general',
+        activeChannelName: 'general',
         'onUpdate:modelValue': onUpdate,
         onSubmit,
       },
@@ -32,7 +32,7 @@ describe('MessageComposer', () => {
     const { getByPlaceholderText } = render(MessageComposer, {
       props: {
         modelValue: '',
-        activeChannelId: 'general',
+        activeChannelName: 'general',
         onSubmit,
       },
     })
@@ -49,7 +49,7 @@ describe('MessageComposer', () => {
     const { getByPlaceholderText } = render(MessageComposer, {
       props: {
         modelValue: '',
-        activeChannelId: 'general',
+        activeChannelName: 'general',
         onSubmit,
       },
     })

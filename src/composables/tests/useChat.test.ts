@@ -23,6 +23,15 @@ vi.mock('@/ws/useWebsocket', () => ({
   useWebsocket: () => mockWebsocket,
 }))
 
+vi.mock('@/api/server.api.ts', () => ({
+  useGetServerChannels: () => ({
+    data: ref([
+      { id: 'general', name: 'general', type: 'text' },
+      { id: 'random', name: 'random', type: 'text' },
+    ]),
+  }),
+}))
+
 describe('useChat', () => {
   beforeEach(() => {
     setActivePinia(createPinia())

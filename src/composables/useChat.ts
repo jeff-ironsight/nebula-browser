@@ -1,8 +1,8 @@
 import { computed, ref, watch } from 'vue'
 
+import { useGetServerChannels } from '@/api/server.api.ts'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
-import type { Channel } from '@/types/Channel'
 import type { DispatchPayload } from '@/types/ws/incoming/DispatchPayload.ts'
 import { useWebsocket } from '@/ws/useWebsocket'
 
@@ -10,14 +10,18 @@ export const useChat = () => {
   const websocket = useWebsocket()
   const authStore = useAuthStore()
   const messageStore = useMessageStore()
-
-  const activeChannelId = ref('general')
+  const activeServerId = ref('00000000-0000-0000-0000-000000000001')
   const composer = ref('')
 
-  const channels = ref<Channel[]>([
-    { id: 'general', name: 'general', type: 'text' },
-    { id: 'random', name: 'random', type: 'text' },
-  ])
+  const activeChannelId = ref('')
+  const { data: channelsQuery } = useGetServerChannels(activeServerId)
+  const channels = computed(() => channelsQuery.value ?? [])
+  const activeChannel = computed(() =>
+    channels.value.find((c) => c.id === activeChannelId.value)
+  )
+  const activeChannelName = computed(() =>
+    activeChannel.value ? activeChannel.value.name : ''
+  )
 
   const filteredMessages = computed(() =>
     messageStore.getMessages(activeChannelId.value).value
@@ -96,6 +100,16 @@ export const useChat = () => {
     }
   })
 
+  watch(
+    channels,
+    (next) => {
+      if (!activeChannelId.value && next.length > 0) {
+        activeChannelId.value = next[0]!.id
+      }
+    },
+    { immediate: true }
+  )
+
   return {
     // Connection state (from websocket)
     status: websocket.status,
@@ -104,7 +118,9 @@ export const useChat = () => {
     gatewayLog: websocket.gatewayLog,
 
     // Chat state
+    activeChannel,
     activeChannelId,
+    activeChannelName,
     composer,
     channels,
     filteredMessages,

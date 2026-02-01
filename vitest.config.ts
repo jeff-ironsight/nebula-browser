@@ -29,6 +29,7 @@ export default defineConfig({
         '**/env.ts',
         '**/main.ts',
         'src/App.vue',
+        '**/*.api.ts',
       ],
     },
   },
