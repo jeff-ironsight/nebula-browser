@@ -12,9 +12,9 @@ export const useChat = () => {
   const messageStore = useMessageStore()
   const composer = ref('')
 
+  const activeServerId = ref('')
   const { data: serversQuery } = useGetServers()
   const servers = computed(() => serversQuery.value ?? [])
-  const activeServerId = computed(() => servers.value[0]?.id ?? '')
 
   const activeChannelId = ref('')
   const { data: channelsQuery } = useGetServerChannels(activeServerId)
@@ -95,6 +95,10 @@ export const useChat = () => {
     composer.value = ''
   }
 
+  const switchServer = (serverId: string) => {
+    activeServerId.value = serverId
+  }
+
   const switchChannel = (channelId: string) => {
     activeChannelId.value = channelId
   }
@@ -104,6 +108,16 @@ export const useChat = () => {
       sendSubscribe(channelId)
     }
   })
+
+  watch(
+    servers,
+    (next) => {
+      if (!activeServerId.value && next.length > 0) {
+        activeServerId.value = next[0]!.id
+      }
+    },
+    { immediate: true }
+  )
 
   watch(
     channels,
@@ -124,9 +138,11 @@ export const useChat = () => {
 
     // Chat state
     activeChannel,
+    activeServerId,
     activeChannelId,
     activeChannelName,
     composer,
+    servers,
     channels,
     filteredMessages,
 
@@ -134,6 +150,7 @@ export const useChat = () => {
     connect,
     disconnect,
     sendMessage,
+    switchServer,
     switchChannel,
   }
 }

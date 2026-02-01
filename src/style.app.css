@@ -48,7 +48,7 @@ input {
 
 .shell {
     display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-columns: 290px minmax(0, 1fr);
     min-height: 100vh;
     color: var(--ink-strong);
     animation: shellFade 0.6s ease-out both;

@@ -6,20 +6,31 @@ import UserMenuButton from '../UserMenuButton.vue'
 
 const user = ref<{ name?: string; email?: string; picture?: string } | undefined>(undefined)
 const isLoading = ref(false)
+const logout = vi.fn()
 
 vi.mock('@auth0/auth0-vue', () => ({
   useAuth0: () => ({
     user,
     isLoading,
+    logout,
   }),
 }))
 
 describe('UserMenuButton', () => {
+  const stubs = {
+    DropdownMenu: { template: '<div><slot /></div>' },
+    DropdownMenuTrigger: { template: '<div><slot /></div>' },
+    DropdownMenuContent: { template: '<div><slot /></div>' },
+    DropdownMenuItem: {
+      template: '<button type="button" @click="$emit(\'click\', $event)"><slot /></button>',
+    },
+  }
+
   it('renders default text when user is undefined', () => {
     user.value = undefined
     isLoading.value = false
 
-    const { getByText } = render(UserMenuButton)
+    const { getByText } = render(UserMenuButton, { global: { stubs } })
 
     expect(getByText('User')).toBeInTheDocument()
     expect(getByText('No email')).toBeInTheDocument()
@@ -29,9 +40,10 @@ describe('UserMenuButton', () => {
     user.value = undefined
     isLoading.value = true
 
-    const { getByText } = render(UserMenuButton)
+    const { container } = render(UserMenuButton, { global: { stubs } })
 
-    expect(getByText('Loading...')).toBeInTheDocument()
+    const emailSpan = container.querySelector('.user-menu-email')
+    expect(emailSpan).toHaveTextContent('Loading...')
   })
 
   it('renders user name and email when available', () => {
@@ -41,7 +53,7 @@ describe('UserMenuButton', () => {
     }
     isLoading.value = false
 
-    const { getByText } = render(UserMenuButton)
+    const { getByText } = render(UserMenuButton, { global: { stubs } })
 
     expect(getByText('John Doe')).toBeInTheDocument()
     expect(getByText('john@example.com')).toBeInTheDocument()
@@ -53,7 +65,7 @@ describe('UserMenuButton', () => {
       picture: 'https://example.com/avatar.jpg',
     }
 
-    const { getByRole } = render(UserMenuButton)
+    const { getByRole } = render(UserMenuButton, { global: { stubs } })
     const img = getByRole('img')
 
     expect(img).toHaveAttribute('src', 'https://example.com/avatar.jpg')
@@ -63,7 +75,7 @@ describe('UserMenuButton', () => {
   it('uses placeholder image when no picture', () => {
     user.value = { name: 'Test' }
 
-    const { getByRole } = render(UserMenuButton)
+    const { getByRole } = render(UserMenuButton, { global: { stubs } })
     const img = getByRole('img')
 
     expect(img.getAttribute('src')).toContain('data:image/svg+xml')
@@ -75,11 +87,23 @@ describe('UserMenuButton', () => {
       picture: 'https://broken-url.com/avatar.jpg',
     }
 
-    const { getByRole } = render(UserMenuButton)
+    const { getByRole } = render(UserMenuButton, { global: { stubs } })
     const img = getByRole('img')
 
     await fireEvent.error(img)
 
     expect(img.getAttribute('src')).toContain('data:image/svg+xml')
+  })
+
+  it('calls logout from the dropdown item', async () => {
+    logout.mockReset()
+    user.value = { name: 'Test' }
+    isLoading.value = false
+
+    const { getByRole } = render(UserMenuButton, { global: { stubs } })
+
+    await fireEvent.click(getByRole('button', { name: /log out/i }))
+
+    expect(logout).toHaveBeenCalled()
   })
 })
