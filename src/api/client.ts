@@ -7,6 +7,9 @@ import { auth0Audience } from '../config/env'
 export const BASE_API_ENDPOINT = '/api'
 
 type TokenProvider = () => Promise<string | null>
+type ApiClient = AxiosInstance
+
+let apiClient: ApiClient | null = null
 
 const addNebulaInterceptor = (instance: AxiosInstance, getToken?: TokenProvider) => {
   if (!getToken) {
@@ -39,7 +42,11 @@ export const createClient = (getToken?: TokenProvider) => {
   return addNebulaInterceptor(axios.create(), getToken)
 }
 
-export const useApiClient = () => {
+export const initApiClient = () => {
+  if (apiClient) {
+    return apiClient
+  }
+
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
 
   const getToken = async () => {
@@ -55,11 +62,19 @@ export const useApiClient = () => {
     }
   }
 
-  return createClient(getToken)
+  apiClient = createClient(getToken)
+  return apiClient
+}
+
+export const getApiClient = () => {
+  if (!apiClient) {
+    throw new Error('API client not initialized. Call initApiClient() in app setup.')
+  }
+  return apiClient
 }
 
 export const useApi = () => {
-  const client = useApiClient()
+  const client = getApiClient()
 
   const get = <T = unknown>(url: string, config?: AxiosRequestConfig) =>
     client.get<T>(url, config)
