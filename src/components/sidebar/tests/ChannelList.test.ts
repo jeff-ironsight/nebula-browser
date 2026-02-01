@@ -15,8 +15,8 @@ vi.mock('@auth0/auth0-vue', () => ({
 
 describe('ChannelList', () => {
   const channels = [
-    { id: 'general', name: 'general', type: 'text' as const },
-    { id: 'random', name: 'random', type: 'text' as const },
+    { id: 'general', name: 'general', serverId: 'text' as const },
+    { id: 'random', name: 'random', serverId: 'text' as const },
   ]
 
   const stubs = {

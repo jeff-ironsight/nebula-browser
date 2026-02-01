@@ -12,6 +12,7 @@ const {
   statusLabel,
   gatewayLog,
   activeChannelId,
+  activeChannelName,
   composer,
   channels,
   filteredMessages,
@@ -35,7 +36,7 @@ onMounted(() => {
     />
     <main class="chat">
       <ChatHeader
-          :active-channel-id="activeChannelId"
+          :active-channel-name="activeChannelName"
           :gateway-log="gatewayLog"
           :status="status"
           :status-label="statusLabel"
@@ -44,7 +45,11 @@ onMounted(() => {
           @disconnect="disconnect"
       />
       <MessageList :messages="filteredMessages"/>
-      <MessageComposer v-model="composer" :active-channel-id="activeChannelId" @submit="sendMessage"/>
+      <MessageComposer
+          v-model="composer"
+          :active-channel-name="activeChannelName"
+          @submit="sendMessage"
+      />
     </main>
   </div>
 </template>

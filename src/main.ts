@@ -2,6 +2,7 @@ import './style.css'
 import './style.app.css'
 
 import { createAuth0 } from '@auth0/auth0-vue'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
@@ -27,5 +28,7 @@ app.use(
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
+
+app.use(VueQueryPlugin)
 
 app.mount('#app')

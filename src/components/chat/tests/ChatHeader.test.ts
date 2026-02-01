@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/auth.store'
 import ChatHeader from '../ChatHeader.vue'
 
 const defaultProps = {
-  activeChannelId: 'general',
+  activeChannelName: 'general',
   status: 'disconnected' as const,
   statusLabel: 'Disconnected',
   statusNote: 'Offline',

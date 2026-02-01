@@ -3,7 +3,7 @@ import { computed, nextTick } from 'vue'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 
-const props = defineProps<{ modelValue: string, activeChannelId: string }>()
+const props = defineProps<{ modelValue: string, activeChannelName: string }>()
 
 const emit = defineEmits<{ 'update:modelValue': [value: string]; submit: [] }>()
 
@@ -24,7 +24,7 @@ const onKeydown = (event: KeyboardEvent) => {
   }
 }
 
-const textAreaPlaceholder = computed(() => `Message #${props.activeChannelId}`)
+const textAreaPlaceholder = computed(() => `Message #${props.activeChannelName}`)
 </script>
 
 <template>

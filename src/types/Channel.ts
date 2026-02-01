@@ -1,5 +1,13 @@
+import type { ChannelResponse } from '@/types/api/ChannelResponse.ts'
+
 export interface Channel {
   id: string
+  serverId: string
   name: string
-  type: 'text' | 'voice'
 }
+
+export const mapChannelFromJson = (data: ChannelResponse): Channel => ({
+  id: data.id,
+  serverId: data.server_id,
+  name: data.name,
+})

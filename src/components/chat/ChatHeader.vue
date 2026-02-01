@@ -4,7 +4,7 @@ import DebugLogSheet from './DebugLogSheet.vue'
 import { useAuthStore } from "@/store/auth.store.ts";
 
 const props = defineProps<{
-  activeChannelId: string
+  activeChannelName: string
   status: ClientStatus
   statusLabel: string
   statusNote: string
@@ -30,7 +30,7 @@ const handleStatusAction = () => {
     <div class="flex items-center gap-3">
       <span class="font-semibold text-(--ink-faint)">#</span>
       <div>
-        <div class="font-semibold">{{ activeChannelId }}</div>
+        <div class="font-semibold">{{ activeChannelName }}</div>
       </div>
     </div>
     <div class="flex items-center gap-4">

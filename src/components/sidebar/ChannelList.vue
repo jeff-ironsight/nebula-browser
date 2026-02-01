@@ -51,7 +51,7 @@ const handleLogout = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem
-                  v-for="channel in channels.filter((item) => item.type === 'text')"
+                  v-for="channel in channels"
                   :key="channel.id"
               >
                 <SidebarMenuButton
