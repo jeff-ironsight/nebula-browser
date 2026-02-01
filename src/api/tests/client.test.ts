@@ -2,7 +2,7 @@ import type { AxiosRequestHeaders } from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 
-import { BASE_API_ENDPOINT, createClient, useApi, useApiClient } from '../client'
+import { BASE_API_ENDPOINT, createClient, initApiClient, useApi } from '../client'
 
 const getAccessTokenSilently = vi.fn()
 const isAuthenticated = ref(false)
@@ -22,6 +22,7 @@ describe('api/client', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     isAuthenticated.value = false
+    initApiClient()
   })
 
   describe('BASE_API_ENDPOINT', () => {
@@ -99,16 +100,16 @@ describe('api/client', () => {
     })
   })
 
-  describe('useApiClient', () => {
+  describe('initApiClient', () => {
     it('returns client when not authenticated', () => {
       isAuthenticated.value = false
-      const client = useApiClient()
+      const client = initApiClient()
       expect(client).toBeDefined()
     })
 
     it('returns client when authenticated', () => {
       isAuthenticated.value = true
-      const client = useApiClient()
+      const client = initApiClient()
       expect(client).toBeDefined()
     })
 
@@ -116,7 +117,7 @@ describe('api/client', () => {
       isAuthenticated.value = true
       getAccessTokenSilently.mockResolvedValue('auth0-token')
 
-      const client = useApiClient()
+      const client = initApiClient()
       const interceptor = client.interceptors.request.handlers![0]
       const requestConfig = { url: '/api/test', headers: {} as AxiosRequestHeaders }
 
@@ -130,7 +131,7 @@ describe('api/client', () => {
     it('returns null token when not authenticated', async () => {
       isAuthenticated.value = false
 
-      const client = useApiClient()
+      const client = initApiClient()
       const interceptor = client.interceptors.request.handlers![0]
       const requestConfig = { url: '/api/test', headers: {} as AxiosRequestHeaders }
       const result = await interceptor!.fulfilled(requestConfig)
@@ -143,7 +144,7 @@ describe('api/client', () => {
       isAuthenticated.value = true
       getAccessTokenSilently.mockRejectedValue(new Error('Token error'))
 
-      const client = useApiClient()
+      const client = initApiClient()
       const interceptor = client.interceptors.request.handlers![0]
       const requestConfig = { url: '/api/test', headers: {} as AxiosRequestHeaders }
       const result = await interceptor!.fulfilled(requestConfig)
