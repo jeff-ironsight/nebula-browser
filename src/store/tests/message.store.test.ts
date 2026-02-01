@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { useMessageStore } from '../message.store'
+import { INACTIVE_CHANNEL_LIMIT, useMessageStore } from '../message.store'
 
 describe('useMessageStore', () => {
   beforeEach(() => {
@@ -182,6 +182,179 @@ describe('useMessageStore', () => {
       expect(store.messagesByChannel).toEqual({})
       expect(store.getMessages('general').value).toEqual([])
       expect(store.getMessages('random').value).toEqual([])
+    })
+
+    it('clears unread counts and active channel', () => {
+      const store = useMessageStore()
+      store.setActiveChannel('general')
+      store.addMessage('random', {
+        id: 'msg-1',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Hello',
+        time: '10:30 AM',
+        channelId: 'random',
+      })
+
+      store.clearAll()
+
+      expect(store.unreadCounts).toEqual({})
+      expect(store.activeChannelId).toBe('')
+    })
+  })
+
+  describe('setActiveChannel', () => {
+    it('sets the active channel id', () => {
+      const store = useMessageStore()
+
+      store.setActiveChannel('general')
+
+      expect(store.activeChannelId).toBe('general')
+    })
+
+    it('clears unread count for the channel', () => {
+      const store = useMessageStore()
+      store.addMessage('general', {
+        id: 'msg-1',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Hello',
+        time: '10:30 AM',
+        channelId: 'general',
+      })
+      expect(store.getUnreadCount('general').value).toBe(1)
+
+      store.setActiveChannel('general')
+
+      expect(store.getUnreadCount('general').value).toBe(0)
+    })
+  })
+
+  describe('getUnreadCount', () => {
+    it('returns 0 for channel with no messages', () => {
+      const store = useMessageStore()
+
+      expect(store.getUnreadCount('general').value).toBe(0)
+    })
+
+    it('returns unread count for inactive channel', () => {
+      const store = useMessageStore()
+      store.setActiveChannel('random')
+
+      store.addMessage('general', {
+        id: 'msg-1',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Hello',
+        time: '10:30 AM',
+        channelId: 'general',
+      })
+      store.addMessage('general', {
+        id: 'msg-2',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'World',
+        time: '10:31 AM',
+        channelId: 'general',
+      })
+
+      expect(store.getUnreadCount('general').value).toBe(2)
+    })
+
+    it('caps unread count at message array length', () => {
+      const store = useMessageStore()
+      store.unreadCounts.general = 100
+
+      store.addMessage('general', {
+        id: 'msg-1',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Hello',
+        time: '10:30 AM',
+        channelId: 'general',
+      })
+
+      expect(store.getUnreadCount('general').value).toBe(1)
+    })
+  })
+
+  describe('inactive channel behavior', () => {
+    it('does not increment unread for active channel', () => {
+      const store = useMessageStore()
+      store.setActiveChannel('general')
+
+      store.addMessage('general', {
+        id: 'msg-1',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Hello',
+        time: '10:30 AM',
+        channelId: 'general',
+      })
+
+      expect(store.getUnreadCount('general').value).toBe(0)
+    })
+
+    it('trims inactive channel messages to limit', () => {
+      const store = useMessageStore()
+      store.setActiveChannel('random')
+
+      const overflow = 5
+      const totalMessages = INACTIVE_CHANNEL_LIMIT + overflow
+
+      for (let i = 0; i < totalMessages; i++) {
+        store.addMessage('general', {
+          id: `msg-${String(i)}`,
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: `Message ${String(i)}`,
+          time: '10:30 AM',
+          channelId: 'general',
+        })
+      }
+
+      expect(store.messagesByChannel.general).toHaveLength(INACTIVE_CHANNEL_LIMIT)
+      // Should keep the most recent messages
+      expect(store.messagesByChannel.general![0]!.content).toBe(`Message ${String(overflow)}`)
+      expect(store.messagesByChannel.general![INACTIVE_CHANNEL_LIMIT - 1]!.content).toBe(`Message ${String(totalMessages - 1)}`)
+    })
+
+    it('does not trim active channel messages', () => {
+      const store = useMessageStore()
+      store.setActiveChannel('general')
+
+      const totalMessages = INACTIVE_CHANNEL_LIMIT + 5
+
+      for (let i = 0; i < totalMessages; i++) {
+        store.addMessage('general', {
+          id: `msg-${String(i)}`,
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: `Message ${String(i)}`,
+          time: '10:30 AM',
+          channelId: 'general',
+        })
+      }
+
+      expect(store.messagesByChannel.general).toHaveLength(totalMessages)
+    })
+  })
+
+  describe('clearChannel', () => {
+    it('also clears unread count', () => {
+      const store = useMessageStore()
+      store.addMessage('general', {
+        id: 'msg-1',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Hello',
+        time: '10:30 AM',
+        channelId: 'general',
+      })
+
+      store.clearChannel('general')
+
+      expect(store.unreadCounts.general).toBeUndefined()
     })
   })
 })
