@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { Channel } from '@/types/Channel.ts'
 import type { Server } from '@/types/Server.ts'
-import { h } from 'vue'
 import {
   Sidebar,
   SidebarContent,
@@ -36,7 +35,8 @@ defineEmits<{ switchChannel: [channelId: string], switchServer: [serverId: strin
                   <SidebarMenuItem v-for="server in servers" :key="server.id">
                     <SidebarMenuButton
                         :is-active="server.id === activeServerId"
-                        :tooltip="h('div', { hidden: false }, server.name)"
+                        :tooltip="server.name"
+                        show-tooltip
                         class="px-2.5 md:px-2 justify-center"
                         @click="$emit('switchServer', server.id)"
                     >
