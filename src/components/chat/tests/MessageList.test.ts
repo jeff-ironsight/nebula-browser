@@ -11,7 +11,7 @@ describe('MessageList', () => {
     authorUserId: 'user-1',
     authorUsername: 'TestUser',
     content: 'Hello world',
-    time: '10:30 AM',
+    createdAt: '10:30 AM',
     channelId: 'general',
     ...overrides,
   })
@@ -42,7 +42,7 @@ describe('MessageList', () => {
   })
 
   it('renders message time', () => {
-    const messages = [createMessage({ time: '2:45 PM' })]
+    const messages = [createMessage({ createdAt: '2:45 PM' })]
 
     const { getByText } = render(MessageList, {
       props: { messages },

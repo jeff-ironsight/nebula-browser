@@ -37,6 +37,10 @@ export const useMessageStore = defineStore('messages', () => {
     }
   }
 
+  const setMessages = (channelId: string, messages: Message[]) => {
+    messagesByChannel.value[channelId] = messages
+  }
+
   const clearChannel = (channelId: string) => {
     delete messagesByChannel.value[channelId]
     delete unreadCounts.value[channelId]
@@ -55,6 +59,7 @@ export const useMessageStore = defineStore('messages', () => {
     getMessages,
     getUnreadCount,
     setActiveChannel,
+    setMessages,
     addMessage,
     clearChannel,
     clearAll,

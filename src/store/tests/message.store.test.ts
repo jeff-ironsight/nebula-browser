@@ -16,7 +16,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello world',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       }
 
@@ -33,7 +33,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'random',
       }
 
@@ -49,7 +49,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'First',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       }
       const message2 = {
@@ -57,7 +57,7 @@ describe('useMessageStore', () => {
         authorUserId: 'def123',
         authorUsername: 'User def123',
         content: 'Second',
-        time: '10:31 AM',
+        createdAt: '10:31 AM',
         channelId: 'general',
       }
 
@@ -84,7 +84,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       }
 
@@ -106,7 +106,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
 
@@ -122,7 +122,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
 
@@ -139,7 +139,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'General message',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
       store.addMessage('random', {
@@ -147,7 +147,7 @@ describe('useMessageStore', () => {
         authorUserId: 'def456',
         authorUsername: 'User def456',
         content: 'Random message',
-        time: '10:31 AM',
+        createdAt: '10:31 AM',
         channelId: 'random',
       })
 
@@ -166,14 +166,14 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'General message',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
       store.addMessage('random', {
         id: 'msg-2',
         authorUserId: 'def456',
         authorUsername: 'User def456', content: 'Random message',
-        time: '10:31 AM',
+        createdAt: '10:31 AM',
         channelId: 'random',
       })
 
@@ -192,7 +192,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'random',
       })
 
@@ -219,7 +219,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
       expect(store.getUnreadCount('general').value).toBe(1)
@@ -246,7 +246,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
       store.addMessage('general', {
@@ -254,7 +254,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'World',
-        time: '10:31 AM',
+        createdAt: '10:31 AM',
         channelId: 'general',
       })
 
@@ -270,7 +270,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
 
@@ -288,7 +288,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
 
@@ -308,7 +308,7 @@ describe('useMessageStore', () => {
           authorUserId: 'abc123',
           authorUsername: 'User abc123',
           content: `Message ${String(i)}`,
-          time: '10:30 AM',
+          createdAt: '10:30 AM',
           channelId: 'general',
         })
       }
@@ -331,7 +331,7 @@ describe('useMessageStore', () => {
           authorUserId: 'abc123',
           authorUsername: 'User abc123',
           content: `Message ${String(i)}`,
-          time: '10:30 AM',
+          createdAt: '10:30 AM',
           channelId: 'general',
         })
       }
@@ -348,7 +348,7 @@ describe('useMessageStore', () => {
         authorUserId: 'abc123',
         authorUsername: 'User abc123',
         content: 'Hello',
-        time: '10:30 AM',
+        createdAt: '10:30 AM',
         channelId: 'general',
       })
 

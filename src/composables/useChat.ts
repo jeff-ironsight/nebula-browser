@@ -1,13 +1,15 @@
 import { computed, ref, watch } from 'vue'
 
+import { useGetChannelMessages } from '@/api/message.api'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import { mapCurrentUserFromJson } from '@/types/CurrentUserContext.ts'
 import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.ts'
-import { mapMessageFromJson } from '@/types/Message.ts'
+import { mapMessageFromEvent } from '@/types/Message.ts'
 import type { Server } from '@/types/Server.ts'
 import { mapServerFromJson } from '@/types/Server.ts'
 import { useWebsocket } from '@/ws/useWebsocket'
+
 
 export const useChat = () => {
   const websocket = useWebsocket()
@@ -32,6 +34,15 @@ export const useChat = () => {
   const filteredMessages = computed(() =>
     messageStore.getMessages(activeChannelId.value).value
   )
+
+  const { data: historyData } = useGetChannelMessages(activeChannelId)
+
+  watch(historyData, (messages) => {
+    if (messages && activeChannelId.value) {
+      // History comes newest-first, reverse for chronological order
+      messageStore.setMessages(activeChannelId.value, messages.reverse())
+    }
+  })
 
   const sendSubscribe = (channelId: string) => {
     websocket.send({ op: 'Subscribe', d: { channel_id: channelId } })
@@ -62,7 +73,12 @@ export const useChat = () => {
       }
       case 'MESSAGE_CREATE': {
         const data = event.d
-        messageStore.addMessage(data.channel_id, mapMessageFromJson(data))
+        // Skip if we already have this message (from history fetch)
+        const existing = messageStore.getMessages(data.channel_id).value
+        if (existing.some((m) => m.id === data.id)) {
+          break
+        }
+        messageStore.addMessage(data.channel_id, mapMessageFromEvent(data))
         break
       }
       case 'ERROR': {

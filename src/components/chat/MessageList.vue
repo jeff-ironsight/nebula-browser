@@ -16,7 +16,7 @@ defineProps<{ messages: Message[] }>()
       <div class="bg-[rgba(20,22,29,0.15)] rounded-xl px-3.5 py-2.5">
         <div class="flex items-baseline gap-2.5 mb-1">
           <span class="font-semibold">{{ message.authorUsername }}</span>
-          <span class="text-xs text-[#7e8799]">{{ message.time }}</span>
+          <span class="text-xs text-[#7e8799]">{{ message.createdAt }}</span>
         </div>
         <div class="text-[#a5adbd]">{{ message.content }}</div>
       </div>

@@ -23,6 +23,14 @@ vi.mock('@/ws/useWebsocket', () => ({
   useWebsocket: () => mockWebsocket,
 }))
 
+vi.mock('@/api/message.api', () => ({
+  useGetChannelMessages: () => ({
+    data: ref(null),
+    isLoading: ref(false),
+    error: ref(null),
+  }),
+}))
+
 const mockReadyEvent = {
   t: 'READY' as const,
   d: {
@@ -113,7 +121,7 @@ describe('useChat', () => {
         authorUserId: 'u1',
         authorUsername: 'user1',
         content: 'test',
-        time: '10:00 AM',
+        createdAt: '10:00 AM',
         channelId: 'general',
       })
 
@@ -272,7 +280,7 @@ describe('useChat', () => {
         authorUserId: 'u1',
         authorUsername: 'user1',
         content: 'General message',
-        time: '10:00 AM',
+        createdAt: '10:00 AM',
         channelId: 'general',
       })
       messageStore.addMessage('random', {
@@ -280,7 +288,7 @@ describe('useChat', () => {
         authorUserId: 'u2',
         authorUsername: 'user2',
         content: 'Random message',
-        time: '10:01 AM',
+        createdAt: '10:01 AM',
         channelId: 'random',
       })
 
