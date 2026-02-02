@@ -12,6 +12,7 @@ const {
   statusLabel,
   gatewayLog,
   activeServerId,
+  activeServerRole,
   activeChannelId,
   activeChannelName,
   composer,
@@ -23,7 +24,8 @@ const {
   sendMessage,
   switchServer,
   switchChannel,
-  createServer
+  createServer,
+  createChannel
 } = useChat()
 
 onMounted(() => {
@@ -37,12 +39,14 @@ onMounted(() => {
     <AppSideBar
         :active-channel-id="activeChannelId"
         :active-server-id="activeServerId"
+        :active-server-role="activeServerRole"
         :channels="channels"
         :servers="servers"
         class="hidden md:flex"
         @switch-channel="switchChannel"
         @switch-server="switchServer"
         @create-server="createServer"
+        @create-channel="createChannel"
     />
     <main class="grid grid-rows-[auto_1fr_auto] bg-[#2c3240]">
       <ChatHeader

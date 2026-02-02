@@ -1,12 +1,14 @@
 import { fireEvent, render } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
+import type { ServerRole } from '@/types/ServerRole.ts'
+
 import AppSideBar from '../AppSideBar.vue'
 
 describe('AppSideBar', () => {
   const servers = [
-    { id: 'server-1', name: 'My Server', ownerUserId: 'user-1', channels: [] },
-    { id: 'server-2', name: 'Other Server', ownerUserId: 'user-2', channels: [] },
+    { id: 'server-1', name: 'My Server', myRole: 'member' as ServerRole, ownerUserId: 'user-1', channels: [] },
+    { id: 'server-2', name: 'Other Server', myRole: 'member' as ServerRole, ownerUserId: 'user-2', channels: [] },
   ]
 
   const channels = [
@@ -38,6 +40,7 @@ describe('AppSideBar', () => {
       props: {
         servers,
         activeServerId: 'server-1',
+        activeServerRole: 'member' as ServerRole,
         channels,
         activeChannelId: 'general',
         onSwitchChannel,
@@ -57,6 +60,7 @@ describe('AppSideBar', () => {
       props: {
         servers,
         activeServerId: 'server-1',
+        activeServerRole: 'member' as ServerRole,
         channels,
         activeChannelId: 'general',
         onSwitchServer,
@@ -74,6 +78,7 @@ describe('AppSideBar', () => {
       props: {
         servers,
         activeServerId: 'server-1',
+        activeServerRole: 'member' as ServerRole,
         channels,
         activeChannelId: 'general',
       },

@@ -35,6 +35,9 @@ vi.mock('@/api/server.api', () => ({
   useCreateServer: () => ({
     mutate: vi.fn(),
   }),
+  useCreateChannel: () => ({
+    mutate: vi.fn(),
+  }),
 }))
 
 const mockReadyEvent = {

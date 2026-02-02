@@ -18,14 +18,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Label } from 'reka-ui'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import type { ServerRole } from '@/types/ServerRole.ts'
 
-defineProps<{ servers: Server[], activeServerId: string, channels: Channel[]; activeChannelId: string }>()
+const props = defineProps<{
+  servers: Server[],
+  activeServerId: string,
+  activeServerRole: ServerRole,
+  channels: Channel[];
+  activeChannelId: string
+}>()
 
 const emit = defineEmits<{
   switchChannel: [channelId: string],
   switchServer: [serverId: string],
-  createServer: [name: string]
+  createServer: [name: string],
+  createChannel: [name: string]
 }>()
 
 const newServerName = ref('')
@@ -33,6 +41,17 @@ const handleCreateServer = () => {
   if (newServerName.value.trim() !== '') {
     emit('createServer', newServerName.value.trim())
     newServerName.value = ''
+  }
+}
+
+const newChannelName = ref('')
+const canCreateChannel = computed(() => {
+  return props.activeServerRole === 'owner' || props.activeServerRole === 'admin'
+})
+const handleCreateChannel = () => {
+  if (newChannelName.value.trim() !== '') {
+    emit('createChannel', newChannelName.value.trim())
+    newChannelName.value = ''
   }
 }
 </script>
@@ -128,6 +147,46 @@ const handleCreateServer = () => {
                       <span>{{ channel.name }}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+                  <Popover v-if="canCreateChannel">
+                    <SidebarMenuItem>
+                      <PopoverTrigger as-child>
+                        <SidebarMenuButton
+                            class="justify-start gap-2"
+                            type="button"
+                        >
+                          <span class="text-sidebar-foreground/50 font-semibold">+</span>
+                          <span class="text-sidebar-foreground/50">Create Channel</span>
+                        </SidebarMenuButton>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-90 ml-4">
+                        <div class="grid gap-4">
+                          <div class="space-y-2">
+                            <h4 class="font-medium leading-none">
+                              Create New Channel
+                            </h4>
+                            <p class="text-sm text-muted-foreground">
+                              Choose a name for your new channel.
+                            </p>
+                          </div>
+                          <div class="grid gap-2">
+                            <div class="grid grid-cols-4 items-center gap-4">
+                              <Label class="ml-2" for="channel-name">Name</Label>
+                              <Input
+                                  id="channel-name"
+                                  v-model="newChannelName"
+                                  class="col-span-2 h-8"
+                                  placeholder="Enter name"
+                                  @keydown.enter="handleCreateChannel"
+                              />
+                              <Button type="button" @click="handleCreateChannel">
+                                Submit
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </SidebarMenuItem>
+                  </Popover>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

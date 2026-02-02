@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { useGetChannelMessages } from '@/api/message.api'
-import { useCreateServer } from '@/api/server.api'
+import { useCreateChannel, useCreateServer } from '@/api/server.api'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import { mapCurrentUserFromJson } from '@/types/CurrentUserContext.ts'
@@ -9,6 +9,7 @@ import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.t
 import { mapMessageFromEvent } from '@/types/Message.ts'
 import type { Server } from '@/types/Server.ts'
 import { mapServerFromJson } from '@/types/Server.ts'
+import type { ServerRole } from '@/types/ServerRole.ts'
 import { useWebsocket } from '@/ws/useWebsocket'
 
 
@@ -20,6 +21,10 @@ export const useChat = () => {
 
   const servers = ref<Server[]>([])
   const activeServerId = ref('')
+  const activeServerRole = computed<ServerRole>(() => {
+    const server = servers.value.find((s) => s.id === activeServerId.value)
+    return server?.myRole ?? 'member'
+  })
 
   const activeChannelId = ref('')
   const channels = computed(() =>
@@ -38,11 +43,12 @@ export const useChat = () => {
 
   const { data: historyData } = useGetChannelMessages(activeChannelId)
   const { mutate: createServerMutation } = useCreateServer()
+  const { mutate: createChannelMutation } = useCreateChannel(activeServerId)
 
   watch(historyData, (messages) => {
     if (messages && activeChannelId.value) {
       // History comes newest-first, reverse for chronological order
-      messageStore.setMessages(activeChannelId.value, messages.reverse())
+      messageStore.setMessages(activeChannelId.value, [...messages].reverse())
     }
   })
 
@@ -139,6 +145,21 @@ export const useChat = () => {
     )
   }
 
+  const createChannel = (name: string) => {
+    createChannelMutation(
+      { name },
+      {
+        onSuccess: (newChannel) => {
+          servers.value = servers.value.map((s) =>
+            s.id === activeServerId.value
+              ? { ...s, channels: [...s.channels, newChannel] }
+              : s
+          )
+        },
+      }
+    )
+  }
+
   watch(activeChannelId, (channelId) => {
     messageStore.setActiveChannel(channelId)
     if (websocket.status.value === 'ready') {
@@ -176,6 +197,7 @@ export const useChat = () => {
     // Chat state
     activeChannel,
     activeServerId,
+    activeServerRole,
     activeChannelId,
     activeChannelName,
     composer,
@@ -191,5 +213,6 @@ export const useChat = () => {
     switchServer,
     switchChannel,
     createServer,
+    createChannel,
   }
 }

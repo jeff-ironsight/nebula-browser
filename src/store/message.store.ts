@@ -28,13 +28,15 @@ export const useMessageStore = defineStore('messages', () => {
   }
 
   const addMessage = (channelId: string, message: Message) => {
-    messagesByChannel.value[channelId] ??= []
-    messagesByChannel.value[channelId].push(message)
+    const existing = messagesByChannel.value[channelId] ?? []
+    let updated = [...existing, message]
 
     if (channelId !== activeChannelId.value) {
       unreadCounts.value[channelId] = (unreadCounts.value[channelId] ?? 0) + 1
-      messagesByChannel.value[channelId] = messagesByChannel.value[channelId].slice(-INACTIVE_CHANNEL_LIMIT)
+      updated = updated.slice(-INACTIVE_CHANNEL_LIMIT)
     }
+
+    messagesByChannel.value[channelId] = updated
   }
 
   const setMessages = (channelId: string, messages: Message[]) => {
