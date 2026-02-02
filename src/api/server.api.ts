@@ -47,7 +47,7 @@ export function useCreateServer() {
 
 async function createServer(data: { name: string }) {
   const { post } = useApi()
-  const res = await post<ServerResponse>(serversEndpoint, { data });
+  const res = await post<ServerResponse>(serversEndpoint, data);
   return res.data;
 }
 
@@ -90,6 +90,6 @@ export function useCreateChannel(serverId: Ref<string>) {
 
 async function createChannel(serverId: string, data: { name: string }) {
   const { post } = useApi()
-  const res = await post<ChannelResponse>(`${serversEndpoint}/${serverId}/channels`, { data });
+  const res = await post<ChannelResponse>(`${serversEndpoint}/${serverId}/channels`, data);
   return res.data;
 }

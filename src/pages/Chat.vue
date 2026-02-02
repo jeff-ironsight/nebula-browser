@@ -23,6 +23,7 @@ const {
   sendMessage,
   switchServer,
   switchChannel,
+  createServer
 } = useChat()
 
 onMounted(() => {
@@ -41,6 +42,7 @@ onMounted(() => {
         class="hidden md:flex"
         @switch-channel="switchChannel"
         @switch-server="switchServer"
+        @create-server="createServer"
     />
     <main class="grid grid-rows-[auto_1fr_auto] bg-[#2c3240]">
       <ChatHeader

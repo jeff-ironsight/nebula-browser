@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { useGetChannelMessages } from '@/api/message.api'
+import { useCreateServer } from '@/api/server.api'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import { mapCurrentUserFromJson } from '@/types/CurrentUserContext.ts'
@@ -36,6 +37,7 @@ export const useChat = () => {
   )
 
   const { data: historyData } = useGetChannelMessages(activeChannelId)
+  const { mutate: createServerMutation } = useCreateServer()
 
   watch(historyData, (messages) => {
     if (messages && activeChannelId.value) {
@@ -119,10 +121,22 @@ export const useChat = () => {
 
   const switchServer = (serverId: string) => {
     activeServerId.value = serverId
+    activeChannelId.value = channels.value[0]?.id || ''
   }
 
   const switchChannel = (channelId: string) => {
     activeChannelId.value = channelId
+  }
+
+  const createServer = (name: string) => {
+    createServerMutation(
+      { name },
+      {
+        onSuccess: (newServer) => {
+          servers.value = [...servers.value, newServer]
+        },
+      }
+    )
   }
 
   watch(activeChannelId, (channelId) => {
@@ -176,5 +190,6 @@ export const useChat = () => {
     sendMessage,
     switchServer,
     switchChannel,
+    createServer,
   }
 }
