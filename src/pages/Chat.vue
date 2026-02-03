@@ -25,7 +25,9 @@ const {
   switchServer,
   switchChannel,
   createServer,
-  createChannel
+  createChannel,
+  deleteServer,
+  deleteChannel
 } = useChat()
 
 onMounted(() => {
@@ -47,6 +49,8 @@ onMounted(() => {
         @switch-server="switchServer"
         @create-server="createServer"
         @create-channel="createChannel"
+        @delete-server="deleteServer"
+        @delete-channel="deleteChannel"
     />
     <main class="grid grid-rows-[auto_1fr_auto] bg-[#2c3240]">
       <ChatHeader

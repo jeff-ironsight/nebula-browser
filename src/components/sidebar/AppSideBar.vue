@@ -15,6 +15,12 @@ import {
 } from '@/components/ui/sidebar'
 import UserMenuButton from '@/components/sidebar/UserMenuButton.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from '@/components/ui/context-menu'
 import { Label } from 'reka-ui'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -33,10 +39,16 @@ const emit = defineEmits<{
   switchChannel: [channelId: string],
   switchServer: [serverId: string],
   createServer: [name: string],
-  createChannel: [name: string]
+  createChannel: [name: string],
+  deleteServer: [serverId: string],
+  deleteChannel: [channelId: string]
 }>()
 
 const newServerName = ref('')
+const canManageServer = (serverId: string) => {
+  const server = props.servers.find(s => s.id === serverId)
+  return server?.myRole === 'owner' || server?.myRole === 'admin'
+}
 const handleCreateServer = () => {
   if (newServerName.value.trim() !== '') {
     emit('createServer', newServerName.value.trim())
@@ -45,7 +57,7 @@ const handleCreateServer = () => {
 }
 
 const newChannelName = ref('')
-const canCreateChannel = computed(() => {
+const canManageChannels = computed(() => {
   return props.activeServerRole === 'owner' || props.activeServerRole === 'admin'
 })
 const handleCreateChannel = () => {
@@ -69,16 +81,27 @@ const handleCreateChannel = () => {
               <SidebarGroupContent class="px-1.5 mt-8 md:px-0">
                 <SidebarMenu>
                   <SidebarMenuItem v-for="server in servers" :key="server.id">
-                    <SidebarMenuButton
-                        :is-active="server.id === activeServerId"
-                        :tooltip="server.name"
-                        class="px-2.5 md:px-2 justify-center"
-                        show-tooltip
-                        @click="$emit('switchServer', server.id)"
-                    >
-                      <!--                  <component :is="server.icon"/>-->
-                      <span>{{ server.name[0] }}</span>
-                    </SidebarMenuButton>
+                    <ContextMenu>
+                      <ContextMenuTrigger as-child>
+                        <SidebarMenuButton
+                            :is-active="server.id === activeServerId"
+                            :tooltip="server.name"
+                            class="px-2.5 md:px-2 justify-center"
+                            show-tooltip
+                            @click="$emit('switchServer', server.id)"
+                        >
+                          <span>{{ server.name[0] }}</span>
+                        </SidebarMenuButton>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent v-if="canManageServer(server.id)">
+                        <ContextMenuItem
+                            variant="destructive"
+                            @click="$emit('deleteServer', server.id)"
+                        >
+                          Delete Server
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
                   </SidebarMenuItem>
                   <Popover>
                     <SidebarMenuItem>
@@ -137,17 +160,29 @@ const handleCreateChannel = () => {
                       v-for="channel in channels"
                       :key="channel.id"
                   >
-                    <SidebarMenuButton
-                        :is-active="channel.id === activeChannelId"
-                        class="justify-start gap-2"
-                        type="button"
-                        @click="$emit('switchChannel', channel.id)"
-                    >
-                      <span class="text-sidebar-foreground/50 font-semibold">#</span>
-                      <span>{{ channel.name }}</span>
-                    </SidebarMenuButton>
+                    <ContextMenu>
+                      <ContextMenuTrigger as-child>
+                        <SidebarMenuButton
+                            :is-active="channel.id === activeChannelId"
+                            class="justify-start gap-2"
+                            type="button"
+                            @click="$emit('switchChannel', channel.id)"
+                        >
+                          <span class="text-sidebar-foreground/50 font-semibold">#</span>
+                          <span>{{ channel.name }}</span>
+                        </SidebarMenuButton>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent v-if="canManageChannels">
+                        <ContextMenuItem
+                            variant="destructive"
+                            @click="$emit('deleteChannel', channel.id)"
+                        >
+                          Delete Channel
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
                   </SidebarMenuItem>
-                  <Popover v-if="canCreateChannel">
+                  <Popover v-if="canManageChannels">
                     <SidebarMenuItem>
                       <PopoverTrigger as-child>
                         <SidebarMenuButton

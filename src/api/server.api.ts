@@ -93,3 +93,24 @@ async function createChannel(serverId: string, data: { name: string }) {
   const res = await post<ChannelResponse>(`${serversEndpoint}/${serverId}/channels`, data);
   return res.data;
 }
+
+export function useDeleteServer() {
+  const queryClient = useQueryClient()
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  return useMutation<void, Error, string>({
+    mutationFn: async (serverId) => {
+      await deleteServer(serverId)
+    },
+    onSuccess: (_data, serverId) => {
+      queryClient.setQueryData<Server[]>(
+        ['servers'],
+        (old) => old?.filter((server) => server.id !== serverId) ?? []
+      )
+    },
+  })
+}
+
+async function deleteServer(serverId: string) {
+  const { del } = useApi()
+  await del(`${serversEndpoint}/${serverId}`);
+}

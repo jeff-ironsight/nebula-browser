@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { Ref } from 'vue';
 import { computed, watch } from 'vue';
 
@@ -52,4 +52,26 @@ async function getChannel(channelId: string, signal?: AbortSignal) {
   const { get } = useApi()
   const res = await get<ChannelResponse>(`${channelsEndpoint}/${channelId}`, { signal });
   return res.data;
+}
+
+export function useDeleteChannel() {
+  const queryClient = useQueryClient()
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  return useMutation<void, Error, { channelId: string; serverId: string }>({
+    mutationFn: async ({ channelId }) => {
+      await deleteChannel(channelId)
+    },
+    onSuccess: (_data, { channelId, serverId }) => {
+      queryClient.removeQueries({ queryKey: ['channels', channelId] })
+      queryClient.setQueryData<Channel[]>(
+        ['servers', serverId, 'channels'],
+        (old) => old?.filter((channel) => channel.id !== channelId) ?? []
+      )
+    },
+  })
+}
+
+async function deleteChannel(channelId: string) {
+  const { del } = useApi()
+  await del(`${channelsEndpoint}/${channelId}`);
 }

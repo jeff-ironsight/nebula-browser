@@ -1,7 +1,8 @@
 import { computed, ref, watch } from 'vue'
 
+import { useDeleteChannel } from '@/api/channel.api'
 import { useGetChannelMessages } from '@/api/message.api'
-import { useCreateChannel, useCreateServer } from '@/api/server.api'
+import { useCreateChannel, useCreateServer, useDeleteServer } from '@/api/server.api'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
 import { mapCurrentUserFromJson } from '@/types/CurrentUserContext.ts'
@@ -44,6 +45,8 @@ export const useChat = () => {
   const { data: historyData } = useGetChannelMessages(activeChannelId)
   const { mutate: createServerMutation } = useCreateServer()
   const { mutate: createChannelMutation } = useCreateChannel(activeServerId)
+  const { mutate: deleteServerMutation } = useDeleteServer()
+  const { mutate: deleteChannelMutation } = useDeleteChannel()
 
   watch(historyData, (messages) => {
     if (messages && activeChannelId.value) {
@@ -160,6 +163,45 @@ export const useChat = () => {
     )
   }
 
+  const deleteServer = (serverId: string) => {
+    deleteServerMutation(serverId, {
+      onSuccess: () => {
+        servers.value = servers.value.filter((s) => s.id !== serverId)
+        // Switch to another server if we deleted the active one
+        if (activeServerId.value === serverId) {
+          activeServerId.value = servers.value[0]?.id ?? ''
+        }
+      },
+    })
+  }
+
+  const deleteChannel = (channelId: string) => {
+    // Find which server this channel belongs to
+    const server = servers.value.find((s) =>
+      s.channels.some((c) => c.id === channelId)
+    )
+    if (!server) {
+      return
+    }
+
+    deleteChannelMutation(
+      { channelId, serverId: server.id },
+      {
+        onSuccess: () => {
+          servers.value = servers.value.map((s) =>
+            s.id === server.id
+              ? { ...s, channels: s.channels.filter((c) => c.id !== channelId) }
+              : s
+          )
+          // Switch to another channel if we deleted the active one
+          if (activeChannelId.value === channelId) {
+            activeChannelId.value = channels.value[0]?.id ?? ''
+          }
+        },
+      }
+    )
+  }
+
   watch(activeChannelId, (channelId) => {
     messageStore.setActiveChannel(channelId)
     if (websocket.status.value === 'ready') {
@@ -214,5 +256,7 @@ export const useChat = () => {
     switchChannel,
     createServer,
     createChannel,
+    deleteServer,
+    deleteChannel,
   }
 }
