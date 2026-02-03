@@ -106,6 +106,9 @@ export const useChat = () => {
         messageStore.addMessage(data.channel_id, mapMessageFromEvent(data))
         break
       }
+      case 'MEMBER_JOIN': {
+        break
+      }
       case 'ERROR': {
         const data = event.d
         websocket.status.value = 'error'
