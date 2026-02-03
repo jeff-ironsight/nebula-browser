@@ -19,6 +19,8 @@ const {
   servers,
   channels,
   filteredMessages,
+  hasMoreMessages,
+  isLoadingMoreMessages,
   connect,
   disconnect,
   sendMessage,
@@ -27,7 +29,8 @@ const {
   createServer,
   createChannel,
   deleteServer,
-  deleteChannel
+  deleteChannel,
+  loadOlderMessages
 } = useChat()
 
 onMounted(() => {
@@ -37,7 +40,7 @@ onMounted(() => {
 
 <template>
   <div
-      class="grid grid-cols-[minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[300px_minmax(0,1fr)] min-h-screen text-[#f4f5f7] animate-[shell-fade_0.6s_ease-out_both]">
+      class="grid grid-cols-[minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[300px_minmax(0,1fr)] h-screen text-[#f4f5f7] animate-[shell-fade_0.6s_ease-out_both]">
     <AppSideBar
         :active-channel-id="activeChannelId"
         :active-server-id="activeServerId"
@@ -52,7 +55,7 @@ onMounted(() => {
         @delete-server="deleteServer"
         @delete-channel="deleteChannel"
     />
-    <main class="grid grid-rows-[auto_1fr_auto] bg-[#2c3240]">
+    <main class="grid grid-rows-[auto_minmax(0,1fr)_auto] bg-[#2c3240] overflow-hidden">
       <ChatHeader
           :active-channel-name="activeChannelName"
           :gateway-log="gatewayLog"
@@ -62,7 +65,12 @@ onMounted(() => {
           @connect="connect"
           @disconnect="disconnect"
       />
-      <MessageList :messages="filteredMessages"/>
+      <MessageList
+          :messages="filteredMessages"
+          :has-more="hasMoreMessages"
+          :is-loading-more="isLoadingMoreMessages"
+          @load-more="loadOlderMessages"
+      />
       <MessageComposer
           v-model="composer"
           :active-channel-name="activeChannelName"

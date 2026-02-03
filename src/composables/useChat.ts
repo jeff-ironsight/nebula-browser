@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { useDeleteChannel } from '@/api/channel.api'
-import { useGetChannelMessages } from '@/api/message.api'
+import { useInfiniteChannelMessages } from '@/api/message.api'
 import { useCreateChannel, useCreateServer, useDeleteServer } from '@/api/server.api'
 import { useAuthStore } from '@/store/auth.store'
 import { useMessageStore } from '@/store/message.store'
@@ -42,7 +42,12 @@ export const useChat = () => {
     messageStore.getMessages(activeChannelId.value).value
   )
 
-  const { data: historyData } = useGetChannelMessages(activeChannelId)
+  const {
+    data: historyData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteChannelMessages(activeChannelId)
   const { mutate: createServerMutation } = useCreateServer()
   const { mutate: createChannelMutation } = useCreateChannel(activeServerId)
   const { mutate: deleteServerMutation } = useDeleteServer()
@@ -50,10 +55,19 @@ export const useChat = () => {
 
   watch(historyData, (messages) => {
     if (messages && activeChannelId.value) {
-      // History comes newest-first, reverse for chronological order
-      messageStore.setMessages(activeChannelId.value, [...messages].reverse())
+      // Messages are already in chronological order from the select transform
+      messageStore.setMessages(activeChannelId.value, messages)
     }
   })
+
+  const loadOlderMessages = () => {
+    if (hasNextPage.value && !isFetchingNextPage.value) {
+      void fetchNextPage()
+    }
+  }
+
+  const hasMoreMessages = hasNextPage
+  const isLoadingMoreMessages = computed(() => isFetchingNextPage.value)
 
   const sendSubscribe = (channelId: string) => {
     websocket.send({ op: 'Subscribe', d: { channel_id: channelId } })
@@ -246,6 +260,8 @@ export const useChat = () => {
     servers,
     channels,
     filteredMessages,
+    hasMoreMessages,
+    isLoadingMoreMessages,
     getUnreadCount: messageStore.getUnreadCount,
 
     // Actions
@@ -258,5 +274,6 @@ export const useChat = () => {
     createChannel,
     deleteServer,
     deleteChannel,
+    loadOlderMessages,
   }
 }

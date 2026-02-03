@@ -357,4 +357,95 @@ describe('useMessageStore', () => {
       expect(store.unreadCounts.general).toBeUndefined()
     })
   })
+
+  describe('prependMessages', () => {
+    it('prepends messages to the beginning of a channel', () => {
+      const store = useMessageStore()
+      store.addMessage('general', {
+        id: 'msg-3',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Third',
+        createdAt: '10:32 AM',
+        channelId: 'general',
+      })
+
+      store.prependMessages('general', [
+        {
+          id: 'msg-1',
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: 'First',
+          createdAt: '10:30 AM',
+          channelId: 'general',
+        },
+        {
+          id: 'msg-2',
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: 'Second',
+          createdAt: '10:31 AM',
+          channelId: 'general',
+        },
+      ])
+
+      expect(store.messagesByChannel.general).toHaveLength(3)
+      expect(store.messagesByChannel.general![0]!.content).toBe('First')
+      expect(store.messagesByChannel.general![1]!.content).toBe('Second')
+      expect(store.messagesByChannel.general![2]!.content).toBe('Third')
+    })
+
+    it('filters out duplicate messages', () => {
+      const store = useMessageStore()
+      store.addMessage('general', {
+        id: 'msg-2',
+        authorUserId: 'abc123',
+        authorUsername: 'User abc123',
+        content: 'Second',
+        createdAt: '10:31 AM',
+        channelId: 'general',
+      })
+
+      store.prependMessages('general', [
+        {
+          id: 'msg-1',
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: 'First',
+          createdAt: '10:30 AM',
+          channelId: 'general',
+        },
+        {
+          id: 'msg-2',
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: 'Second (duplicate)',
+          createdAt: '10:31 AM',
+          channelId: 'general',
+        },
+      ])
+
+      expect(store.messagesByChannel.general).toHaveLength(2)
+      expect(store.messagesByChannel.general![0]!.content).toBe('First')
+      expect(store.messagesByChannel.general![1]!.content).toBe('Second')
+    })
+
+    it('creates channel array if it does not exist', () => {
+      const store = useMessageStore()
+
+      store.prependMessages('general', [
+        {
+          id: 'msg-1',
+          authorUserId: 'abc123',
+          authorUsername: 'User abc123',
+          content: 'First',
+          createdAt: '10:30 AM',
+          channelId: 'general',
+        },
+      ])
+
+      expect(store.messagesByChannel.general).toHaveLength(1)
+      expect(store.messagesByChannel.general![0]!.content).toBe('First')
+    })
+  })
 })

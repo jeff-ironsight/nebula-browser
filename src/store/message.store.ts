@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 
 import type { Message } from '@/types/Message'
 
-export const INACTIVE_CHANNEL_LIMIT: number = 50
+export const INACTIVE_CHANNEL_LIMIT: number = 25
 
 export const useMessageStore = defineStore('messages', () => {
   const messagesByChannel = ref<Record<string, Message[]>>({})
@@ -43,6 +43,14 @@ export const useMessageStore = defineStore('messages', () => {
     messagesByChannel.value[channelId] = messages
   }
 
+  const prependMessages = (channelId: string, messages: Message[]) => {
+    const existing = messagesByChannel.value[channelId] ?? []
+    // Filter out any duplicates
+    const existingIds = new Set(existing.map((m) => m.id))
+    const newMessages = messages.filter((m) => !existingIds.has(m.id))
+    messagesByChannel.value[channelId] = [...newMessages, ...existing]
+  }
+
   const clearChannel = (channelId: string) => {
     delete messagesByChannel.value[channelId]
     delete unreadCounts.value[channelId]
@@ -62,6 +70,7 @@ export const useMessageStore = defineStore('messages', () => {
     getUnreadCount,
     setActiveChannel,
     setMessages,
+    prependMessages,
     addMessage,
     clearChannel,
     clearAll,

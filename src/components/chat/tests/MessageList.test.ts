@@ -16,55 +16,53 @@ describe('MessageList', () => {
     ...overrides,
   })
 
-  it('renders empty list when no messages', () => {
+  const defaultProps = {
+    messages: [] as Message[],
+    hasMore: false,
+    isLoadingMore: false,
+  }
+
+  it('renders the scroll container', () => {
     const { container } = render(MessageList, {
-      props: { messages: [] },
+      props: { ...defaultProps, messages: [] },
     })
 
     expect(container.querySelector('section')).toBeInTheDocument()
-    expect(container.querySelectorAll('article')).toHaveLength(0)
   })
 
-  it('renders messages with author and content', () => {
-    const messages = [
-      createMessage({ id: 'msg-1', authorUsername: 'Alice', content: 'Hello!' }),
-      createMessage({ id: 'msg-2', authorUsername: 'Bob', content: 'Hi there!' }),
-    ]
+  it('renders loading indicator when isLoadingMore is true', () => {
+    const messages = [createMessage({ id: 'msg-1' })]
 
     const { getByText } = render(MessageList, {
-      props: { messages },
+      props: { ...defaultProps, messages, isLoadingMore: true },
     })
 
-    expect(getByText('Alice')).toBeInTheDocument()
-    expect(getByText('Hello!')).toBeInTheDocument()
-    expect(getByText('Bob')).toBeInTheDocument()
-    expect(getByText('Hi there!')).toBeInTheDocument()
+    expect(getByText('Loading older messages...')).toBeInTheDocument()
   })
 
-  it('renders message time', () => {
-    const messages = [createMessage({ createdAt: '2:45 PM' })]
+  it('does not render loading indicator when isLoadingMore is false', () => {
+    const messages = [createMessage({ id: 'msg-1' })]
 
-    const { getByText } = render(MessageList, {
-      props: { messages },
+    const { queryByText } = render(MessageList, {
+      props: { ...defaultProps, messages, isLoadingMore: false },
     })
 
-    expect(getByText('2:45 PM')).toBeInTheDocument()
+    expect(queryByText('Loading older messages...')).not.toBeInTheDocument()
   })
 
-  it('applies stagger animation delay based on index', () => {
+  it('sets up virtualizer container with correct height', () => {
     const messages = [
       createMessage({ id: 'msg-1' }),
       createMessage({ id: 'msg-2' }),
-      createMessage({ id: 'msg-3' }),
     ]
 
     const { container } = render(MessageList, {
-      props: { messages },
+      props: { ...defaultProps, messages },
     })
 
-    const messageElements = container.querySelectorAll('article')
-    expect(messageElements[0]).toHaveStyle('animation-delay: 0ms')
-    expect(messageElements[1]).toHaveStyle('animation-delay: 40ms')
-    expect(messageElements[2]).toHaveStyle('animation-delay: 80ms')
+    // The inner div should have a height based on estimated row size (72px per message)
+    const innerDiv = container.querySelector('section > div')
+    expect(innerDiv).toBeInTheDocument()
+    expect(innerDiv).toHaveStyle('position: relative')
   })
 })

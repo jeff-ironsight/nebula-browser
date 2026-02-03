@@ -24,10 +24,13 @@ vi.mock('@/ws/useWebsocket', () => ({
 }))
 
 vi.mock('@/api/message.api', () => ({
-  useGetChannelMessages: () => ({
+  useInfiniteChannelMessages: () => ({
     data: ref(null),
     isLoading: ref(false),
     error: ref(null),
+    fetchNextPage: vi.fn(),
+    hasNextPage: ref(false),
+    isFetchingNextPage: ref(false),
   }),
 }))
 
@@ -36,6 +39,15 @@ vi.mock('@/api/server.api', () => ({
     mutate: vi.fn(),
   }),
   useCreateChannel: () => ({
+    mutate: vi.fn(),
+  }),
+  useDeleteServer: () => ({
+    mutate: vi.fn(),
+  }),
+}))
+
+vi.mock('@/api/channel.api', () => ({
+  useDeleteChannel: () => ({
     mutate: vi.fn(),
   }),
 }))
