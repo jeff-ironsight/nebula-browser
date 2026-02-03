@@ -15,12 +15,7 @@ import {
 } from '@/components/ui/sidebar'
 import UserMenuButton from '@/components/sidebar/UserMenuButton.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger
-} from '@/components/ui/context-menu'
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import { Label } from 'reka-ui'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -57,6 +52,9 @@ const handleCreateServer = () => {
 }
 
 const newChannelName = ref('')
+const textChannels = computed(() => {
+  return props.channels.filter(channel => channel.type === 'text')
+})
 const canManageChannels = computed(() => {
   return props.activeServerRole === 'owner' || props.activeServerRole === 'admin'
 })
@@ -157,7 +155,7 @@ const handleCreateChannel = () => {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem
-                      v-for="channel in channels"
+                      v-for="channel in textChannels"
                       :key="channel.id"
                   >
                     <ContextMenu>

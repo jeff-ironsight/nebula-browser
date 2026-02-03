@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
+import type { ChannelType } from '@/types/ChannelType.ts'
 import type { ServerRole } from '@/types/ServerRole.ts'
 
 import AppSideBar from '../AppSideBar.vue'
@@ -12,8 +13,8 @@ describe('AppSideBar', () => {
   ]
 
   const channels = [
-    { id: 'general', name: 'general', serverId: 'server-1' },
-    { id: 'random', name: 'random', serverId: 'server-1' },
+    { id: 'general', name: 'general', serverId: 'server-1', type: 'text' as ChannelType },
+    { id: 'random', name: 'random', serverId: 'server-1', type: 'text' as ChannelType },
   ]
 
   const stubs = {
