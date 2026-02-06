@@ -13,9 +13,9 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 import { Label } from 'reka-ui'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { useCreateInvite } from '@/api/invite.api'
 import type { Invite } from '@/types/Invite'
 import { computed, ref, watch } from 'vue'
+import { useCreateInvite } from '@/api/server.api.ts'
 
 const props = defineProps<{
   servers: Server[],
@@ -73,8 +73,8 @@ const persistServerOrder = () => {
 }
 const normalizeServerOrder = () => {
   const currentIds = props.servers
-    .map((server) => server.id)
-    .filter((id) => id !== DEFAULT_SERVER_ID)
+      .map((server) => server.id)
+      .filter((id) => id !== DEFAULT_SERVER_ID)
   const existing = serverOrder.value.filter((id) => currentIds.includes(id))
   const missing = currentIds.filter((id) => !existing.includes(id))
   const nextOrder = [...existing, ...missing]
@@ -173,9 +173,9 @@ const copyInviteCode = async (serverId: string) => {
 
 serverOrder.value = readServerOrder()
 watch(
-  () => props.servers,
-  () => normalizeServerOrder(),
-  { immediate: true },
+    () => props.servers,
+    () => normalizeServerOrder(),
+    { immediate: true },
 )
 </script>
 
@@ -188,19 +188,19 @@ watch(
             <ContextMenu>
               <ContextMenuTrigger as-child>
                 <span
-                  :ref="(el) => setServerTriggerRef(server.id, el as HTMLElement)"
-                  :draggable="server.id !== DEFAULT_SERVER_ID"
-                  @dragstart="handleDragStart(server.id, $event)"
-                  @dragover="handleDragOver(server.id, $event)"
-                  @drop="handleDrop(server.id, $event)"
-                  @dragend="handleDragEnd"
+                    :ref="(el) => setServerTriggerRef(server.id, el as HTMLElement)"
+                    :draggable="server.id !== DEFAULT_SERVER_ID"
+                    @dragend="handleDragEnd"
+                    @dragover="handleDragOver(server.id, $event)"
+                    @dragstart="handleDragStart(server.id, $event)"
+                    @drop="handleDrop(server.id, $event)"
                 >
                   <SidebarMenuButton
-                    :is-active="server.id === activeServerId"
-                    :tooltip="server.name"
-                    class="px-2.5 md:px-2 justify-center"
-                    show-tooltip
-                    @click="$emit('switchServer', server.id)"
+                      :is-active="server.id === activeServerId"
+                      :tooltip="server.name"
+                      class="px-2.5 md:px-2 justify-center"
+                      show-tooltip
+                      @click="$emit('switchServer', server.id)"
                   >
                     <span>{{ server.name[0] }}</span>
                   </SidebarMenuButton>

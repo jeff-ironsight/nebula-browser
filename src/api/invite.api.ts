@@ -1,30 +1,45 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { Ref } from 'vue'
 
 import { BASE_API_ENDPOINT, useApi } from '@/api/client.ts'
-import type { Invite, InviteResponse } from '@/types/Invite.ts';
-import { mapInviteFromJson } from '@/types/Invite.ts'
+import type { UsedInvite, UseInviteResponse } from '@/types/Invite.ts'
+import { mapUsedInviteFromJson } from '@/types/Invite.ts'
+import type { Server } from '@/types/Server.ts'
 
-const serversEndpoint = `${BASE_API_ENDPOINT}/servers`;
+const invitesEndpoint = `${BASE_API_ENDPOINT}/invites`
 
-export function useCreateInvite(serverId: Ref<string>) {
+export function useUseInvite() {
   const queryClient = useQueryClient()
-  return useMutation<Invite, Error, { max_uses: number, expires_in_hours: number }>({
-    mutationFn: async (payload) => {
-      const result = await createInvite(serverId.value, payload)
-      return mapInviteFromJson(result)
+  return useMutation<UsedInvite, Error, string>({
+    mutationFn: async (inviteCode) => {
+      const result = await acceptInvite(inviteCode)
+      return mapUsedInviteFromJson(result)
     },
-    onSuccess: (created) => {
-      queryClient.setQueryData<Invite[]>(
-        ['servers', serverId.value, 'invites'],
-        (old) => [created, ...(old ?? [])]
+    onSuccess: (usedInvite) => {
+      const server = usedInvite.server
+      if (!server) {
+        return
+      }
+      queryClient.setQueryData<Server[]>(
+        ['servers'],
+        (old) => {
+          if (!old) {
+            return [server]
+          }
+          const idx = old.findIndex((item) => item.id === server.id)
+          if (idx === -1) {
+            return [server, ...old]
+          }
+          const next = old.slice()
+          next[idx] = server
+          return next
+        }
       )
     },
   })
 }
 
-async function createInvite(serverId: string, data: { max_uses: number, expires_in_hours: number }) {
+async function acceptInvite(inviteCode: string) {
   const { post } = useApi()
-  const res = await post<InviteResponse>(`${serversEndpoint}/${serverId}/invites`, data)
+  const res = await post<UseInviteResponse>(`${invitesEndpoint}/${inviteCode}`)
   return res.data
 }

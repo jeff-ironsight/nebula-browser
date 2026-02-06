@@ -5,7 +5,7 @@ import type { Server } from '@/types/Server.ts'
 
 import ServerList from '../ServerList.vue'
 
-vi.mock('@/api/invite.api', () => ({
+vi.mock('@/api/server.api', () => ({
   useCreateInvite: () => ({
     mutateAsync: vi.fn(),
     isPending: false,

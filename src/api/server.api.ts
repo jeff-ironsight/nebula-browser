@@ -7,6 +7,8 @@ import type { Channel } from '@/types/Channel.ts';
 import { mapChannelFromJson } from '@/types/Channel.ts'
 import type { ChannelResponse } from '@/types/gateway/incoming/ChannelResponse.ts'
 import type { ServerResponse } from '@/types/gateway/incoming/ServerResponse.ts'
+import type { Invite, InviteResponse } from '@/types/Invite.ts';
+import { mapInviteFromJson } from '@/types/Invite.ts'
 import type { Server } from '@/types/Server.ts';
 import { mapServerFromJson } from '@/types/Server.ts'
 
@@ -113,4 +115,26 @@ export function useDeleteServer() {
 async function deleteServer(serverId: string) {
   const { del } = useApi()
   await del(`${serversEndpoint}/${serverId}`);
+}
+
+export function useCreateInvite(serverId: Ref<string>) {
+  const queryClient = useQueryClient()
+  return useMutation<Invite, Error, { max_uses: number, expires_in_hours: number }>({
+    mutationFn: async (payload) => {
+      const result = await createInvite(serverId.value, payload)
+      return mapInviteFromJson(result)
+    },
+    onSuccess: (created) => {
+      queryClient.setQueryData<Invite[]>(
+        ['servers', serverId.value, 'invites'],
+        (old) => [created, ...(old ?? [])]
+      )
+    },
+  })
+}
+
+async function createInvite(serverId: string, data: { max_uses: number, expires_in_hours: number }) {
+  const { post } = useApi()
+  const res = await post<InviteResponse>(`${serversEndpoint}/${serverId}/invites`, data)
+  return res.data
 }
