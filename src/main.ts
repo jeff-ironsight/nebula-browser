@@ -19,6 +19,7 @@ app.use(
     authorizationParams: {
       redirect_uri: window.location.origin,
       audience: VITE_AUTH0_AUDIENCE,
+      scope: 'openid profile email offline_access',
     },
     useRefreshTokens: true,
     cacheLocation: 'localstorage',
