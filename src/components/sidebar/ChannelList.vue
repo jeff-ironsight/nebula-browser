@@ -30,6 +30,7 @@ const emit = defineEmits<{
 }>()
 
 const newChannelName = ref('')
+const isCreateChannelOpen = ref(false)
 const textChannels = computed(() => {
   return props.channels.filter(channel => channel.type === 'text')
 })
@@ -40,6 +41,7 @@ const handleCreateChannel = () => {
   if (newChannelName.value.trim() !== '') {
     emit('createChannel', newChannelName.value.trim())
     newChannelName.value = ''
+    isCreateChannelOpen.value = false
   }
 }
 </script>
@@ -78,7 +80,7 @@ const handleCreateChannel = () => {
               </ContextMenuContent>
             </ContextMenu>
           </SidebarMenuItem>
-          <Popover v-if="canManageChannels">
+          <Popover v-if="canManageChannels" v-model:open="isCreateChannelOpen">
             <SidebarMenuItem>
               <PopoverTrigger as-child>
                 <SidebarMenuButton

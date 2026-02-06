@@ -29,6 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const newServerName = ref('')
+const isCreateServerOpen = ref(false)
 const inviteServerId = ref('')
 const inviteForm = ref({ maxUses: 1, expiresInHours: 24 })
 const inviteByServerId = ref<Record<string, Invite>>({})
@@ -45,6 +46,7 @@ const handleCreateServer = () => {
   if (newServerName.value.trim() !== '') {
     emit('createServer', newServerName.value.trim())
     newServerName.value = ''
+    isCreateServerOpen.value = false
   }
 }
 const setServerTriggerRef = (serverId: string, el: HTMLElement | null) => {
@@ -201,7 +203,7 @@ const copyInviteCode = async (serverId: string) => {
               </div>
             </div>
           </teleport>
-          <Popover>
+          <Popover v-model:open="isCreateServerOpen">
             <SidebarMenuItem>
               <PopoverTrigger as-child>
                 <SidebarMenuButton
