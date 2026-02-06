@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useCreateInvite } from '@/api/invite.api'
 import type { Invite } from '@/types/Invite'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   servers: Server[],
@@ -28,6 +28,8 @@ const emit = defineEmits<{
   deleteServer: [serverId: string],
 }>()
 
+const DEFAULT_SERVER_ID = '00000000-0000-0000-0000-000000000001'
+
 const newServerName = ref('')
 const isCreateServerOpen = ref(false)
 const inviteServerId = ref('')
@@ -37,6 +39,12 @@ const isInvitePopoverOpen = ref(false)
 const invitePopoverPosition = ref<{ top: number, left: number } | null>(null)
 const serverTriggerRefs = new Map<string, HTMLElement>()
 const { mutateAsync: createInvite, isPending: isCreatingInvite } = useCreateInvite(inviteServerId)
+
+const orderedServers = computed(() => {
+  const defaultServer = props.servers.find((server) => server.id === DEFAULT_SERVER_ID)
+  const otherServers = props.servers.filter((server) => server.id !== DEFAULT_SERVER_ID)
+  return defaultServer ? [defaultServer, ...otherServers] : otherServers
+})
 
 const canManageServer = (serverId: string) => {
   const server = props.servers.find(s => s.id === serverId)
@@ -101,7 +109,7 @@ const copyInviteCode = async (serverId: string) => {
     <SidebarGroup>
       <SidebarGroupContent class="px-1.5 mt-8 md:px-0">
         <SidebarMenu>
-          <SidebarMenuItem v-for="server in servers" :key="server.id">
+          <SidebarMenuItem v-for="server in orderedServers" :key="server.id">
             <ContextMenu>
               <ContextMenuTrigger as-child>
                 <span :ref="(el) => setServerTriggerRef(server.id, el as HTMLElement)">
@@ -185,10 +193,10 @@ const copyInviteCode = async (serverId: string) => {
                       Generate
                     </Button>
                     <Input
-                      v-if="inviteServerId && inviteByServerId[inviteServerId]"
-                      :model-value="inviteByServerId[inviteServerId]?.code"
-                      class="h-8 flex-1"
-                      readonly
+                        v-if="inviteServerId && inviteByServerId[inviteServerId]"
+                        :model-value="inviteByServerId[inviteServerId]?.code"
+                        class="h-8 flex-1"
+                        readonly
                     />
                     <Button
                         v-if="inviteServerId && inviteByServerId[inviteServerId]"
