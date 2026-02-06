@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import type { Ref } from 'vue';
 import { computed, unref } from 'vue'
+import { toast } from 'vue-sonner'
 
 import { BASE_API_ENDPOINT, useApi } from '@/api/client.ts';
 import type { Channel } from '@/types/Channel.ts';
@@ -43,6 +44,7 @@ export function useCreateServer() {
         ['servers'],
         (old) => [created, ...(old ?? [])]
       )
+      toast.success(`Created server "${created.name}".`)
     },
   })
 }
@@ -86,6 +88,7 @@ export function useCreateChannel(serverId: Ref<string>) {
         ['servers', serverId.value, 'channels'],
         (old) => [created, ...(old ?? [])]
       )
+      toast.success(`Created channel "${created.name}".`)
     },
   })
 }

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 
 import { BASE_API_ENDPOINT, useApi } from '@/api/client.ts'
 import type { UsedInvite, UseInviteResponse } from '@/types/Invite.ts'
@@ -15,6 +16,11 @@ export function useUseInvite() {
       return mapUsedInviteFromJson(result)
     },
     onSuccess: (usedInvite) => {
+      if (usedInvite.alreadyMember) {
+        toast.info('You are already a member of this server.')
+      } else {
+        toast.success('Joined server.')
+      }
       const server = usedInvite.server
       if (!server) {
         return

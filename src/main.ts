@@ -1,4 +1,5 @@
 import './style.css'
+import 'vue-sonner/style.css'
 
 import { createAuth0 } from '@auth0/auth0-vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'

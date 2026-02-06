@@ -6,6 +6,7 @@ import Chat from './pages/Chat.vue'
 import Login from './pages/Login.vue'
 import Loading from "./pages/Loading.vue"
 import Error from "./pages/Error.vue"
+import { Toaster } from "@/components/ui/sonner"
 
 const { user, isAuthenticated, isLoading, error, logout } = useAuth0()
 initApiClient()
@@ -31,6 +32,7 @@ watch(error, (err) => {
   <Error v-else-if="emailNotVerified" :message="emailNotVerifiedMessage"/>
   <Chat v-else-if="isAuthenticated"/>
   <Login v-else/>
+  <Toaster />
 </template>
 
 <style scoped>

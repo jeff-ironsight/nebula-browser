@@ -10,12 +10,14 @@ import {
 } from '@/components/ui/sidebar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
+import { Icon } from '@iconify/vue'
 import { Label } from 'reka-ui'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import type { Invite } from '@/types/Invite'
 import { computed, ref, watch } from 'vue'
 import { useCreateInvite } from '@/api/server.api.ts'
+import { useUseInvite } from '@/api/invite.api.ts'
 
 const props = defineProps<{
   servers: Server[],
@@ -33,6 +35,9 @@ const SERVER_ORDER_STORAGE_KEY = 'server_order'
 
 const newServerName = ref('')
 const isCreateServerOpen = ref(false)
+const isJoinServerOpen = ref(false)
+const joinInviteCode = ref('')
+const joinInviteError = ref('')
 const inviteServerId = ref('')
 const inviteForm = ref({ maxUses: 1, expiresInHours: 24 })
 const inviteByServerId = ref<Record<string, Invite>>({})
@@ -42,6 +47,7 @@ const serverTriggerRefs = new Map<string, HTMLElement>()
 const serverOrder = ref<string[]>([])
 const draggingServerId = ref<string | null>(null)
 const { mutateAsync: createInvite, isPending: isCreatingInvite } = useCreateInvite(inviteServerId)
+const { mutateAsync: useInvite, isPending: isUsingInvite } = useUseInvite()
 
 const orderedServers = computed(() => {
   const defaultServer = props.servers.find((server) => server.id === DEFAULT_SERVER_ID)
@@ -170,8 +176,39 @@ const copyInviteCode = async (serverId: string) => {
   if (!code) return
   await navigator.clipboard.writeText(code)
 }
+const resetJoinInvite = () => {
+  joinInviteCode.value = ''
+  joinInviteError.value = ''
+}
+const handleUseInvite = async () => {
+  const code = joinInviteCode.value.trim()
+  if (!code) {
+    joinInviteError.value = 'Enter an invite code.'
+    return
+  }
+  joinInviteError.value = ''
+  try {
+    const result = await useInvite(code)
+    isJoinServerOpen.value = false
+    resetJoinInvite()
+    if (result.serverId) {
+      emit('switchServer', result.serverId)
+    }
+  } catch (error) {
+    joinInviteError.value =
+        error instanceof Error ? error.message : 'Failed to join with this invite.'
+  }
+}
 
 serverOrder.value = readServerOrder()
+watch(
+    () => isJoinServerOpen.value,
+    (open) => {
+      if (!open) {
+        resetJoinInvite()
+      }
+    },
+)
 watch(
     () => props.servers,
     () => normalizeServerOrder(),
@@ -301,7 +338,7 @@ watch(
                     show-tooltip
                     tooltip="Create new server"
                 >
-                  <span>+</span>
+                  <Icon class="h-4 w-4" icon="mdi:add"/>
                 </SidebarMenuButton>
               </PopoverTrigger>
               <PopoverContent class="w-90 ml-8">
@@ -328,6 +365,53 @@ watch(
                         Submit
                       </Button>
                     </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </SidebarMenuItem>
+          </Popover>
+          <Popover v-model:open="isJoinServerOpen">
+            <SidebarMenuItem>
+              <PopoverTrigger as-child>
+                <SidebarMenuButton
+                    class="px-2.5 md:px-2 justify-center"
+                    show-tooltip
+                    tooltip="Join with invite"
+                >
+                  <Icon class="h-4 w-4" icon="mdi:link"/>
+                </SidebarMenuButton>
+              </PopoverTrigger>
+              <PopoverContent class="w-90 ml-8">
+                <div class="grid gap-4">
+                  <div class="space-y-2">
+                    <h4 class="font-medium leading-none">
+                      Join with Invite
+                    </h4>
+                    <p class="text-sm text-muted-foreground">
+                      Paste an invite code to join a server.
+                    </p>
+                  </div>
+                  <div class="grid gap-2">
+                    <div class="grid grid-cols-4 items-center gap-4">
+                      <Label class="ml-2" for="invite-code">Invite code</Label>
+                      <Input
+                          id="invite-code"
+                          v-model="joinInviteCode"
+                          class="col-span-2 h-8"
+                          placeholder="e.g. 4C2Z9B"
+                          @keydown.enter="handleUseInvite"
+                      />
+                      <Button
+                          :disabled="isUsingInvite"
+                          type="button"
+                          @click="handleUseInvite"
+                      >
+                        Join
+                      </Button>
+                    </div>
+                    <p v-if="joinInviteError" class="text-xs text-destructive ml-2">
+                      {{ joinInviteError }}
+                    </p>
                   </div>
                 </div>
               </PopoverContent>

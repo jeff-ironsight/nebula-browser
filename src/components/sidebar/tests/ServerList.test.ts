@@ -1,6 +1,8 @@
 import { fireEvent, render } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
 
+import { useUseInvite } from '@/api/invite.api.ts'
 import type { Server } from '@/types/Server.ts'
 
 import ServerList from '../ServerList.vue'
@@ -8,8 +10,15 @@ import ServerList from '../ServerList.vue'
 vi.mock('@/api/server.api', () => ({
   useCreateInvite: () => ({
     mutateAsync: vi.fn(),
-    isPending: false,
+    isPending: ref(false),
   }),
+}))
+
+vi.mock('@/api/invite.api.ts', () => ({
+  useUseInvite: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+    isPending: ref(false),
+  })),
 }))
 
 describe('ServerList', () => {
@@ -41,6 +50,7 @@ describe('ServerList', () => {
     Button: {
       template: '<button type="button" @click="$emit(\'click\')"><slot /></button>',
     },
+    Icon: { template: '<span />' },
   }
 
   const servers: Server[] = [
@@ -95,5 +105,34 @@ describe('ServerList', () => {
 
     const deleteButtons = queryAllByText('Delete Server')
     expect(deleteButtons).toHaveLength(1)
+  })
+
+  it('joins a server with an invite code', async () => {
+    const onSwitchServer = vi.fn()
+    const useUseInviteMock = useUseInvite as unknown as ReturnType<typeof vi.fn>
+    const mutateAsync = vi.fn().mockResolvedValue({
+      serverId: 'server-1',
+      alreadyMember: false,
+      server: null,
+    })
+    useUseInviteMock.mockReturnValue({
+      mutateAsync,
+      isPending: ref(false),
+    } as unknown as ReturnType<typeof useUseInvite>)
+
+    const { getByPlaceholderText, getByRole } = render(ServerList, {
+      props: {
+        servers,
+        activeServerId: 'server-2',
+        onSwitchServer,
+      },
+      global: { stubs },
+    })
+
+    await fireEvent.update(getByPlaceholderText('e.g. 4C2Z9B'), 'INVITE123')
+    await fireEvent.click(getByRole('button', { name: 'Join' }))
+
+    expect(mutateAsync).toHaveBeenCalledWith('INVITE123')
+    expect(onSwitchServer).toHaveBeenCalledWith('server-1')
   })
 })
