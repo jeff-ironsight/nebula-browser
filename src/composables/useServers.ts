@@ -58,7 +58,10 @@ export const useServers = () => {
       { name },
       {
         onSuccess: (newServer) => {
-          servers.value = [...servers.value, newServer]
+          servers.value = [...servers.value, newServer].map((server) => ({
+            ...server,
+            channels: [...server.channels],
+          }))
         },
       }
     )
@@ -72,7 +75,7 @@ export const useServers = () => {
           servers.value = servers.value.map((s) =>
             s.id === activeServerId.value
               ? { ...s, channels: [...s.channels, newChannel] }
-              : s
+              : { ...s, channels: [...s.channels] }
           )
         },
       }
@@ -82,7 +85,12 @@ export const useServers = () => {
   const deleteServer = (serverId: string) => {
     deleteServerMutation(serverId, {
       onSuccess: () => {
-        servers.value = servers.value.filter((s) => s.id !== serverId)
+        servers.value = servers.value
+          .filter((s) => s.id !== serverId)
+          .map((server) => ({
+            ...server,
+            channels: [...server.channels],
+          }))
         if (activeServerId.value === serverId) {
           activeServerId.value = servers.value[0]?.id ?? ''
         }
@@ -105,7 +113,7 @@ export const useServers = () => {
           servers.value = servers.value.map((s) =>
             s.id === server.id
               ? { ...s, channels: s.channels.filter((c) => c.id !== channelId) }
-              : s
+              : { ...s, channels: [...s.channels] }
           )
           if (activeChannelId.value === channelId) {
             activeChannelId.value = channels.value[0]?.id ?? ''

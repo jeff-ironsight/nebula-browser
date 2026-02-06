@@ -5,6 +5,13 @@ import type { Server } from '@/types/Server.ts'
 
 import ServerList from '../ServerList.vue'
 
+vi.mock('@/api/invite.api', () => ({
+  useCreateInvite: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+}))
+
 describe('ServerList', () => {
   const stubs = {
     SidebarContent: { template: '<div><slot /></div>' },
