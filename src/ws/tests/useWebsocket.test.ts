@@ -1,5 +1,6 @@
+import { render } from '@testing-library/vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 import type { DispatchPayload } from '@/types/gateway/incoming/DispatchPayload.ts'
 
@@ -139,6 +140,28 @@ describe('useWebsocket', () => {
       })
     })
 
+    it('does not send identify when token is missing', async () => {
+      isAuthenticated.value = true
+      getAccessTokenSilently.mockResolvedValue(null)
+
+      let capturedCallbacks: Record<string, () => void> = {}
+      vi.mocked(createSocketClient).mockImplementation((opts) => {
+        capturedCallbacks = {
+          onOpen: opts.onOpen!,
+          onClose: opts.onClose!,
+          onError: opts.onError!,
+        }
+        return mockSocketClient
+      })
+
+      const ws = useWebsocket()
+      await ws.connect()
+
+      capturedCallbacks.onOpen!()
+
+      expect(mockSocketClient.send).not.toHaveBeenCalled()
+    })
+
     it('handles onClose by setting disconnected status', async () => {
       isAuthenticated.value = true
       getAccessTokenSilently.mockResolvedValue('test-token')
@@ -238,6 +261,24 @@ describe('useWebsocket', () => {
     })
   })
 
+  describe('ws url', () => {
+    it('uses protocol and host when gateway override is not set', async () => {
+      isAuthenticated.value = true
+      getAccessTokenSilently.mockResolvedValue('test-token')
+
+      let capturedUrl: (() => string) | undefined
+      vi.mocked(createSocketClient).mockImplementation((opts) => {
+        capturedUrl = opts.url
+        return mockSocketClient
+      })
+
+      const ws = useWebsocket()
+      await ws.connect()
+
+      expect(capturedUrl?.()).toMatch(/wss?:\/\/.*\/ws/)
+    })
+  })
+
   describe('send', () => {
     it('does nothing when socket is not open', () => {
       mockSocketClient.isOpen.mockReturnValue(false)
@@ -280,6 +321,29 @@ describe('useWebsocket', () => {
       expect(ws.status.value).toBe('disconnected')
       expect(ws.statusNote.value).toBe('Disconnected')
       expect(ws.gatewayLog.value).toContain('< DISCONNECT')
+    })
+  })
+
+  describe('lifecycle', () => {
+    it('disconnects socket on unmount when used in a component', async () => {
+      isAuthenticated.value = true
+      getAccessTokenSilently.mockResolvedValue('test-token')
+
+      const TestComponent = {
+        template: '<div />',
+        setup() {
+          const ws = useWebsocket()
+          void ws.connect()
+          return {}
+        },
+      }
+
+      const { unmount } = render(TestComponent)
+
+      await nextTick()
+      unmount()
+
+      expect(mockSocketClient.disconnect).toHaveBeenCalled()
     })
   })
 })

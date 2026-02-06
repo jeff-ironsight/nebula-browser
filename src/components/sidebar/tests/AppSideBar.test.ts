@@ -1,7 +1,6 @@
 import { fireEvent, render } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { ChannelType } from '@/types/ChannelType.ts'
 import type { ServerRole } from '@/types/ServerRole.ts'
 
 import AppSideBar from '../AppSideBar.vue'
@@ -12,44 +11,47 @@ describe('AppSideBar', () => {
     { id: 'server-2', name: 'Other Server', myRole: 'member' as ServerRole, ownerUserId: 'user-2', channels: [] },
   ]
 
-  const channels = [
-    { id: 'general', name: 'general', serverId: 'server-1', type: 'text' as ChannelType },
-    { id: 'random', name: 'random', serverId: 'server-1', type: 'text' as ChannelType },
-  ]
-
   const stubs = {
     SidebarProvider: { template: '<div><slot /></div>' },
     Sidebar: { template: '<aside><slot /></aside>' },
-    SidebarHeader: { template: '<div><slot /></div>' },
-    SidebarContent: { template: '<div><slot /></div>' },
     SidebarFooter: { template: '<div><slot /></div>' },
-    SidebarGroup: { template: '<div><slot /></div>' },
-    SidebarGroupContent: { template: '<div><slot /></div>' },
-    SidebarGroupLabel: { template: '<div><slot /></div>' },
-    SidebarMenu: { template: '<div><slot /></div>' },
-    SidebarMenuItem: { template: '<div><slot /></div>' },
-    SidebarMenuButton: {
-      template: '<button type="button" @click="$emit(\'click\', $event)"><slot /></button>',
-    },
     UserMenuButton: { template: '<div data-testid="user-menu-button">User</div>' },
+    ServerList: {
+      template: `
+        <div>
+          <button type="button" data-testid="server-switch" @click="$emit('switch-server', 'server-2')">Switch</button>
+          <button type="button" data-testid="server-create" @click="$emit('create-server', 'New Server')">Create</button>
+          <button type="button" data-testid="server-delete" @click="$emit('delete-server', 'server-1')">Delete</button>
+        </div>
+      `,
+    },
+    ChannelList: {
+      template: `
+        <div>
+          <button type="button" data-testid="channel-switch" @click="$emit('switch-channel', 'random')">Switch</button>
+          <button type="button" data-testid="channel-create" @click="$emit('create-channel', 'New Channel')">Create</button>
+          <button type="button" data-testid="channel-delete" @click="$emit('delete-channel', 'general')">Delete</button>
+        </div>
+      `,
+    },
   }
 
   it('emits switchChannel when a channel is clicked', async () => {
     const onSwitchChannel = vi.fn()
 
-    const { getByRole } = render(AppSideBar, {
+    const { getByTestId } = render(AppSideBar, {
       props: {
         servers,
         activeServerId: 'server-1',
         activeServerRole: 'member' as ServerRole,
-        channels,
+        channels: [],
         activeChannelId: 'general',
         onSwitchChannel,
       },
       global: { stubs },
     })
 
-    await fireEvent.click(getByRole('button', { name: /random/i }))
+    await fireEvent.click(getByTestId('channel-switch'))
 
     expect(onSwitchChannel).toHaveBeenCalledWith('random')
   })
@@ -57,21 +59,69 @@ describe('AppSideBar', () => {
   it('emits switchServer when a server is clicked', async () => {
     const onSwitchServer = vi.fn()
 
-    const { getByRole } = render(AppSideBar, {
+    const { getByTestId } = render(AppSideBar, {
       props: {
         servers,
         activeServerId: 'server-1',
         activeServerRole: 'member' as ServerRole,
-        channels,
+        channels: [],
         activeChannelId: 'general',
         onSwitchServer,
       },
       global: { stubs },
     })
 
-    await fireEvent.click(getByRole('button', { name: 'O' }))
+    await fireEvent.click(getByTestId('server-switch'))
 
     expect(onSwitchServer).toHaveBeenCalledWith('server-2')
+  })
+
+  it('forwards create and delete events from ServerList', async () => {
+    const onCreateServer = vi.fn()
+    const onDeleteServer = vi.fn()
+
+    const { getByTestId } = render(AppSideBar, {
+      props: {
+        servers,
+        activeServerId: 'server-1',
+        activeServerRole: 'member' as ServerRole,
+        channels: [],
+        activeChannelId: 'general',
+        onCreateServer,
+        onDeleteServer,
+      },
+      global: { stubs },
+    })
+
+    await fireEvent.click(getByTestId('server-create'))
+    await fireEvent.click(getByTestId('server-delete'))
+
+    expect(onCreateServer).toHaveBeenCalledWith('New Server')
+    expect(onDeleteServer).toHaveBeenCalledWith('server-1')
+  })
+
+  it('forwards create and delete events from ChannelList', async () => {
+    const onCreateChannel = vi.fn()
+    const onDeleteChannel = vi.fn()
+
+    const { getByTestId } = render(AppSideBar, {
+      props: {
+        servers,
+        activeServerId: 'server-1',
+        activeServerRole: 'member' as ServerRole,
+        channels: [],
+        activeChannelId: 'general',
+        onCreateChannel,
+        onDeleteChannel,
+      },
+      global: { stubs },
+    })
+
+    await fireEvent.click(getByTestId('channel-create'))
+    await fireEvent.click(getByTestId('channel-delete'))
+
+    expect(onCreateChannel).toHaveBeenCalledWith('New Channel')
+    expect(onDeleteChannel).toHaveBeenCalledWith('general')
   })
 
   it('renders UserMenuButton below both sidebars', () => {
@@ -80,7 +130,7 @@ describe('AppSideBar', () => {
         servers,
         activeServerId: 'server-1',
         activeServerRole: 'member' as ServerRole,
-        channels,
+        channels: [],
         activeChannelId: 'general',
       },
       global: { stubs },
