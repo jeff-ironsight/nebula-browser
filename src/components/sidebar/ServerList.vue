@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useCreateInvite } from '@/api/invite.api'
 import type { Invite } from '@/types/Invite'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
   servers: Server[],
@@ -29,6 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const DEFAULT_SERVER_ID = '00000000-0000-0000-0000-000000000001'
+const SERVER_ORDER_STORAGE_KEY = 'server_order'
 
 const newServerName = ref('')
 const isCreateServerOpen = ref(false)
@@ -38,13 +39,50 @@ const inviteByServerId = ref<Record<string, Invite>>({})
 const isInvitePopoverOpen = ref(false)
 const invitePopoverPosition = ref<{ top: number, left: number } | null>(null)
 const serverTriggerRefs = new Map<string, HTMLElement>()
+const serverOrder = ref<string[]>([])
+const draggingServerId = ref<string | null>(null)
 const { mutateAsync: createInvite, isPending: isCreatingInvite } = useCreateInvite(inviteServerId)
 
 const orderedServers = computed(() => {
   const defaultServer = props.servers.find((server) => server.id === DEFAULT_SERVER_ID)
   const otherServers = props.servers.filter((server) => server.id !== DEFAULT_SERVER_ID)
-  return defaultServer ? [defaultServer, ...otherServers] : otherServers
+  const orderIndex = new Map(serverOrder.value.map((id, index) => [id, index]))
+  const orderedOthers = [...otherServers].sort((a, b) => {
+    const aIndex = orderIndex.get(a.id) ?? Number.POSITIVE_INFINITY
+    const bIndex = orderIndex.get(b.id) ?? Number.POSITIVE_INFINITY
+    return aIndex - bIndex
+  })
+  return defaultServer ? [defaultServer, ...orderedOthers] : orderedOthers
 })
+
+const readServerOrder = () => {
+  const stored = localStorage.getItem(SERVER_ORDER_STORAGE_KEY)
+  if (!stored) return []
+  try {
+    const parsed = JSON.parse(stored)
+    if (Array.isArray(parsed)) {
+      return parsed.filter((id): id is string => typeof id === 'string')
+    }
+  } catch {
+    return []
+  }
+  return []
+}
+const persistServerOrder = () => {
+  localStorage.setItem(SERVER_ORDER_STORAGE_KEY, JSON.stringify(serverOrder.value))
+}
+const normalizeServerOrder = () => {
+  const currentIds = props.servers
+    .map((server) => server.id)
+    .filter((id) => id !== DEFAULT_SERVER_ID)
+  const existing = serverOrder.value.filter((id) => currentIds.includes(id))
+  const missing = currentIds.filter((id) => !existing.includes(id))
+  const nextOrder = [...existing, ...missing]
+  if (nextOrder.join('|') !== serverOrder.value.join('|')) {
+    serverOrder.value = nextOrder
+    persistServerOrder()
+  }
+}
 
 const canManageServer = (serverId: string) => {
   const server = props.servers.find(s => s.id === serverId)
@@ -63,6 +101,36 @@ const setServerTriggerRef = (serverId: string, el: HTMLElement | null) => {
     return
   }
   serverTriggerRefs.set(serverId, el)
+}
+const handleDragStart = (serverId: string, event: DragEvent) => {
+  if (serverId === DEFAULT_SERVER_ID) return
+  draggingServerId.value = serverId
+  event.dataTransfer?.setData('text/plain', serverId)
+  event.dataTransfer && (event.dataTransfer.effectAllowed = 'move')
+}
+const handleDragOver = (serverId: string, event: DragEvent) => {
+  if (serverId === DEFAULT_SERVER_ID) return
+  if (draggingServerId.value && draggingServerId.value !== serverId) {
+    event.preventDefault()
+    event.dataTransfer && (event.dataTransfer.dropEffect = 'move')
+  }
+}
+const handleDrop = (serverId: string, event: DragEvent) => {
+  if (serverId === DEFAULT_SERVER_ID) return
+  event.preventDefault()
+  const sourceId = draggingServerId.value || event.dataTransfer?.getData('text/plain') || ''
+  if (!sourceId || sourceId === serverId || sourceId === DEFAULT_SERVER_ID) return
+  const order = [...serverOrder.value]
+  const fromIndex = order.indexOf(sourceId)
+  const toIndex = order.indexOf(serverId)
+  if (fromIndex === -1 || toIndex === -1) return
+  order.splice(fromIndex, 1)
+  order.splice(toIndex, 0, sourceId)
+  serverOrder.value = order
+  persistServerOrder()
+}
+const handleDragEnd = () => {
+  draggingServerId.value = null
 }
 const openInvitePopover = (serverId: string) => {
   inviteServerId.value = serverId
@@ -102,6 +170,13 @@ const copyInviteCode = async (serverId: string) => {
   if (!code) return
   await navigator.clipboard.writeText(code)
 }
+
+serverOrder.value = readServerOrder()
+watch(
+  () => props.servers,
+  () => normalizeServerOrder(),
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -112,13 +187,20 @@ const copyInviteCode = async (serverId: string) => {
           <SidebarMenuItem v-for="server in orderedServers" :key="server.id">
             <ContextMenu>
               <ContextMenuTrigger as-child>
-                <span :ref="(el) => setServerTriggerRef(server.id, el as HTMLElement)">
+                <span
+                  :ref="(el) => setServerTriggerRef(server.id, el as HTMLElement)"
+                  :draggable="server.id !== DEFAULT_SERVER_ID"
+                  @dragstart="handleDragStart(server.id, $event)"
+                  @dragover="handleDragOver(server.id, $event)"
+                  @drop="handleDrop(server.id, $event)"
+                  @dragend="handleDragEnd"
+                >
                   <SidebarMenuButton
-                      :is-active="server.id === activeServerId"
-                      :tooltip="server.name"
-                      class="px-2.5 md:px-2 justify-center"
-                      show-tooltip
-                      @click="$emit('switchServer', server.id)"
+                    :is-active="server.id === activeServerId"
+                    :tooltip="server.name"
+                    class="px-2.5 md:px-2 justify-center"
+                    show-tooltip
+                    @click="$emit('switchServer', server.id)"
                   >
                     <span>{{ server.name[0] }}</span>
                   </SidebarMenuButton>
